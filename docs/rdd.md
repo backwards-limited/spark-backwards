@@ -1,8 +1,9 @@
 # Resilient Distributed Datasets (RDD)
 
 - What is a dataset?
+
   - Essentially it's a collection of data e.g. list of strings, rows in a relational database.
-  
+
 - RDDs can contain any type of object including user defined classes.
 
 - A RDD is simply an encapsulation of a very large dataset.
@@ -48,7 +49,43 @@ val integerRdd = sc.parallelize(inputIntegers)
 Here, all the elements in the collection will be copied to form a distributed dataset that can be operated on in parallel.
 This example is obviously not practical for large datasets, which would attempt to load all data into memory.
 
-Note that **SparkContext** represents a connection to a computing cluster.
-
-Now even though using **sc.textFile** is more practical, in reality the external storage will be a distributed file system such as **Amazon S3** or **HDFS**.
+Note that **SparkContext** represents a connection to a computing cluster.Now even though using **sc.textFile** is more practical, in reality the external storage will be a distributed file system such as **Amazon S3** or **HDFS**.
 And more such as **Cassandra**, **Elasticsearch** etc.
+
+## RDDs are Distributed
+
+- Each RDD is broken into multiple pieces called partitions, and these partitions are divided across the clusters.
+
+## Lazy Evaluation
+
+```scala
+// Nothing would happen when Spark sees textFile() statement
+val lines = sc textFile "in/uppercase.txt"
+
+// Nothing would happen when Spark sees filter() transformation
+val linesWithFriday = lines.filter(_.startsWith("Friday"))
+
+// Spark only starts loading uppercase.txt when first() action is called on linesWithFriday
+linesWithFriday.first()
+
+// Spark scans the files only until the first line starting with Friday is detected
+// It doesn't even need to go through the entire file
+```
+
+- Transformation return another RDD
+
+  ```scala
+  val lines = sc textFile "in/uppercase.txt"
+  
+  def textFile(path: String, minPartitions: Int = defaultMinPartitions): RDD[String]
+  ```
+
+- Actions return some other data type
+
+  ```scala
+  val first = lines.first()
+  
+  def first(): T
+  ```
+
+  

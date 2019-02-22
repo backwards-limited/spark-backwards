@@ -24,7 +24,6 @@ import com.backwards.spark.{Delimiter, SparkApp}
   * local    => 1 core
   */
 object AirportsInUSA extends SparkApp {
-
   val conf: SparkConf = new SparkConf().setAppName(getClass.getSimpleName).setMaster("local[2]")
   val sc: SparkContext = new SparkContext(conf)
 

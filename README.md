@@ -14,6 +14,10 @@ Example usage included while covering various courses.
 
 - [Resilient Distributed Datasets (RDD)](docs/rdd.md)
 
+- [Architecture](docs/architecture.md)
+
+- [Pair RDD](docs/pair-rdd.md)
+
 - Courses (module per course)
 
   - [Spark Course](spark-course/README.md)
