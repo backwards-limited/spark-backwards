@@ -13,3 +13,19 @@ Either:
 
 1. Return Pair RDDs from a list of key/value data structure called **tuple**.
 2. Turn a regular RDD into a Pair RDD.
+
+## Examples
+
+Examples are under [src/main/scala/com/backwards/spark/rdd/pair](src/main/scala/com/backwards/spark/rdd/pair).
+
+[WordCount.scala](src/main/scala/com/backwards/spark/rdd/pair/WordCount.scala) uses function **reduceByKey**:
+
+> ![Reduce by key](images/reduce-by-key.png)
+
+We can also use **groupByKey** but often it is less efficient:
+
+> ![Reduce vs Group](images/reduce-vs-group.png)
+
+We can improve the efficiency of **groupByKey**:
+
+> ![Improve group by key](images/improve-group-by-key.png)
