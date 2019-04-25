@@ -4,7 +4,7 @@ import sbt._
 
 lazy val root = project("spark-backwards", file("."))
   .settings(description := "Backwards Spark module aggregation - Spark functionality includes example usage in various courses")
-  .aggregate(spark, sparkCourse)
+  .aggregate(spark, sparkCourse, sparkAndHadoopCourse)
 
 lazy val spark = project("spark")
   .settings(description := "Backwards Spark functionality includes example usage in various courses")
@@ -12,6 +12,10 @@ lazy val spark = project("spark")
 
 lazy val sparkCourse = project("spark-course")
   .settings(description := "Spark Course")
+  .dependsOn(spark % "compile->compile;test->test;it->it")
+
+lazy val sparkAndHadoopCourse = project("spark-and-hadoop-course")
+  .settings(description := "Spark and Hadoop Course")
   .dependsOn(spark % "compile->compile;test->test;it->it")
 
 def project(id: String): Project = project(id, file(id))

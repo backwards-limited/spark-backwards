@@ -4,8 +4,6 @@ Scala module with reusable Spark functionality.
 
 Example usage included while covering various courses.
 
-**TODO Extract module _backwards_ into its own repo e.g. backwards**
-
 ## Table of Contents
 
 - [Setup](docs/setup.md)
@@ -21,3 +19,5 @@ Example usage included while covering various courses.
 - Courses (module per course)
 
   - [Spark Course](spark-course/README.md)
+  
+  - [Spark and Hadoop Course](spark-and-hadoop/README.md)

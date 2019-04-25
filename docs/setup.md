@@ -14,4 +14,5 @@ Installation essentials:
 brew update
 brew install scala
 brew install sbt
+brew cask install virtualbox
 ```
