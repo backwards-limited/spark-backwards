@@ -19,6 +19,8 @@ The Hadoop Distributed File System (**HDFS**) is the primary data storage system
   - Previewing data files: **hadoop fs -tail or -cat**
   - Checking sizes of files: **hadoop fs -du**
 
+Assuming you have [Cloudera](setup-cloudera.md) bootstrapped all services:
+
 ```bash
 [root@quickstart /]# cd /etc/hadoop/conf
 

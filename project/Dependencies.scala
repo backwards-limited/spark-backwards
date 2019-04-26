@@ -52,11 +52,16 @@ object Dependencies {
   )
 
   lazy val spark: Seq[ModuleID] = {
-    val version = "2.4.0"
+    val version = "2.4.2"
 
     Seq(
       "org.apache.spark" %% "spark-core",
-      "org.apache.spark" %% "spark-sql"
+      "org.apache.spark" %% "spark-sql",
+      "org.apache.spark" %% "spark-streaming",
+      "org.apache.spark" %% "spark-mllib",
+      "org.apache.spark" %% "spark-hive",
+      "org.apache.spark" %% "spark-graphx",
+      "org.apache.spark" %% "spark-repl"
     ).map(_ % version)
   }
 }

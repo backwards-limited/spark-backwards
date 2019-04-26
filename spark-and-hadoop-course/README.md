@@ -6,12 +6,16 @@ Note that this module is within a multi-module project and that there is only on
 
 ## Table of Contents
 
-- Setup
+- [Setup](docs/setup.md)
 
   - [Local](docs/setup-local.md)
   
   - [Cloudera](docs/setup-cloudera.md)
+  
+  - [Docker](docs/setup-docker.md)
 
   - [Cloud] TODO
 
 - [HDFS](docs/hdfs.md)
+
+- [YARN](docs/yarn.md)

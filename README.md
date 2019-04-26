@@ -4,6 +4,8 @@ Scala module with reusable Spark functionality.
 
 Example usage included while covering various courses.
 
+**WARNING** until Spark 3.0.0 is release, only Java 8 can be used.
+
 ## Table of Contents
 
 - [Setup](docs/setup.md)
