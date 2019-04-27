@@ -11,8 +11,9 @@ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/
 Installation essentials:
 
 ```bash
-brew update
+brew cask install virtualbox
 brew install scala
 brew install sbt
-brew cask install virtualbox
+brew install apache-spark
+brew install httpie
 ```

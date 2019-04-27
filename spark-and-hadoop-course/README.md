@@ -8,11 +8,15 @@ Note that this module is within a multi-module project and that there is only on
 
 - [Setup](docs/setup.md)
 
+  - [Apache Spark](docs/setup-apache-spark.md)
+
   - [Local](docs/setup-local.md)
   
   - [Cloudera](docs/setup-cloudera.md)
   
   - [Docker](docs/setup-docker.md)
+  
+  - [Docker Alternative](docs/setup-docker-alternative.md)
 
   - [Cloud] TODO
 

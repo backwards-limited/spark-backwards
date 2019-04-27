@@ -1,0 +1,25 @@
+POST {{host}}/submissions/create
+Content-Type: application/json
+
+{
+  "action": "CreateSubmissionRequest",
+  "appArgs": [ "myAppArgument1" ],
+  "appResource": "file:/Users/davidainslie/workspace/backwards/spark-backwards/spark-and-hadoop-course/target/scala-2.12/spark-and-hadoop-course_2.12-0.1.0-SNAPSHOT.jar",
+  "clientSparkVersion": "2.4.2",
+  "environmentVariables": {
+    "SPARK_ENV_LOADED": "1"
+  },
+  "mainClass": "com.backwards.spark.SimpleExampleJob",
+  "sparkProperties": {
+    "spark.jars": "file:Users/davidainslie/workspace/backwards/spark-backwards/spark-and-hadoop-course/target/scala-2.12/spark-and-hadoop-course_2.12-0.1.0-SNAPSHOT.jar",
+    "spark.driver.supervise": "false",
+    "spark.app.name": "MyJob",
+    "spark.eventLog.enabled": "true",
+    "spark.submit.deployMode": "cluster",
+    "spark.driver.cores": "2",
+    "spark.executor.cores": "2",
+    "spark.master": "spark://localhost:7077"
+  }
+}
+
+###

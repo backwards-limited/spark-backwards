@@ -7,12 +7,18 @@ import org.apache.spark._
   * Small data. Double every value in the data.
   */
 object SimpleExampleJob extends App {
-  val data = Array(1, 2, 3)
-
   val conf = new SparkConf().setMaster("local[3]").setAppName("SimpleExampleJob")
   val sc = new SparkContext(conf)
-  val dd = sc.parallelize(data)
 
-  val results = dd.map(_ * 2).collect()
-  println(s"Result is: ${results.mkString(", ")}")
+  try {
+    val data = Array(1, 2, 3)
+
+
+    val dd = sc.parallelize(data)
+
+    val results = dd.map(_ * 2).collect()
+    println(s"Result is: ${results.mkString(", ")}")
+  } finally {
+    sc.stop()
+  }
 }

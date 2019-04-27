@@ -26,7 +26,11 @@ $ docker run \
   /usr/bin/docker-quickstart
 ```
 
-(Choose an appropriate volume mapping).
+(Choose an appropriate volume mapping). There is an equivalent [docker-compose](../docker/docker-compose-cloudera.yml) file:
+
+```bash
+$ docker-compose -f docker-compose-cloudera.yml up
+```
 
 Even though **hue** will probably state that it failed to start, fear not.
 

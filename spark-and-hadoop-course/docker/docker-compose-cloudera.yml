@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+  quickstart.cloudera:
+    hostname: quickstart-cloudera
+    image: cloudera/quickstart
+    command: /usr/bin/docker-quickstart
+    privileged: true
+    ports:
+      - 8888:8888
+      - 7180:7180
+      - 80:80
+      - 8983:8983
+      - 11000:11000
+      - 50070:50070
+      - 9092:9092
+      - 2181:2181
+      - 3306:3306
+    volumes:
+      - ./data:/src
