@@ -8,6 +8,8 @@ RUN tar -xzf spark-2.4.2-bin-hadoop2.7.tgz && \
   mv spark-2.4.2-bin-hadoop2.7 /spark && \
   rm spark-2.4.2-bin-hadoop2.7.tgz
 
+ENV PATH="/spark/bin:/spark/sbin:${PATH}"
+
 COPY start-master.sh /start-master.sh
 
 COPY start-worker.sh /start-worker.sh

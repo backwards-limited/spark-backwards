@@ -1,24 +1,19 @@
 package com.backwards.spark
 
-import org.apache.spark._
+import org.apache.spark.sql.SparkSession
 
-/**
-  * A very short job for stress tests purpose.
-  * Small data. Double every value in the data.
-  */
 object SimpleExampleJob extends App {
-  val conf = new SparkConf().setMaster("local[3]").setAppName("SimpleExampleJob")
-  val sc = new SparkContext(conf)
+  val SPARK_HOME = sys.env("SPARK_HOME")
+  val logFile = s"$SPARK_HOME/README.md"
 
-  try {
-    val data = Array(1, 2, 3)
+  val spark = SparkSession.builder
+    .appName("first-scala-spark")
+    .getOrCreate()
 
+  val logData = spark.read.textFile(logFile).cache()
+  val numAs = logData.filter(line => line.contains("a")).count()
+  val numBs = logData.filter(line => line.contains("b")).count()
+  println(s"Lines with a: $numAs, Lines with b: $numBs")
 
-    val dd = sc.parallelize(data)
-
-    val results = dd.map(_ * 2).collect()
-    println(s"Result is: ${results.mkString(", ")}")
-  } finally {
-    sc.stop()
-  }
+  spark.stop()
 }
