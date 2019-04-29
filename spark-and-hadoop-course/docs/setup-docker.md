@@ -2,7 +2,7 @@
 
 The following is taken from the post [A Journey into Big Data with Apache Spark Part1](https://towardsdatascience.com/a-journey-into-big-data-with-apache-spark-part-1-5dfcc2bccdd2) and [Part2](https://towardsdatascience.com/a-journey-into-big-data-with-apache-spark-part-2-4511aa19a900).
 
-Within folder [spark-docker](../spark-docker):
+Within folder [docker](../docker):
 
 ```bash
 $ docker build -t davidainslie/spark .
@@ -160,7 +160,7 @@ And once it is complete:
 
 ## Docker Compose
 
-There are some (helper) scripts: [start-master.sh](../spark-docker/start-master.sh) and [start-worker.sh](../spark-docker/start-worker.sh).
+There are some (helper) scripts: [start-master.sh](../docker/start-master.sh) and [start-worker.sh](../docker/start-worker.sh).
 
 (With everything shutdown) Rebuild and publish:
 
@@ -172,7 +172,7 @@ $ docker build -t davidainslie/spark .
 $ docker push davidainslie/spark
 ```
 
-And now for the [docker-compose](../spark-docker/docker-compose.yml) file:
+And now for the [docker-compose](../docker/docker-compose.yml) file:
 
 ```yaml
 version: "3.7"
@@ -234,5 +234,92 @@ To bring the cluster up, we simply run `docker-compose up`. One of the great thi
 
 ```bash
 $ docker-compose up --scale spark-worker=3
+```
+
+## Test Application
+
+First we shall create a **scala / sbt** docker image to work with. Under directory [docker/scala](../docker/scala) we build the following [Dockerfile](../docker/scala/Dockerfile):
+
+```dockerfile
+FROM openjdk:8-jre-alpine
+
+ARG SCALA_VERSION
+ARG SBT_VERSION
+
+ENV SCALA_VERSION ${SCALA_VERSION:-2.12.8}
+ENV SBT_VERSION ${SBT_VERSION:-1.2.8}
+
+RUN \
+  echo "$SCALA_VERSION $SBT_VERSION" && \
+  mkdir -p /usr/lib/jvm/java-1.8-openjdk/jre && \
+  touch /usr/lib/jvm/java-1.8-openjdk/jre/release && \
+  apk add --no-cache bash && \
+  apk add --no-cache curl && \
+  curl -fsL http://downloads.typesafe.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz | tar xfz - -C /usr/local && \
+  ln -s /usr/local/scala-$SCALA_VERSION/bin/* /usr/local/bin/ && \
+  scala -version && \
+  scalac -version
+
+RUN \
+  curl -fsL https://github.com/sbt/sbt/releases/download/v$SBT_VERSION/sbt-$SBT_VERSION.tgz | tar xfz - -C /usr/local && \
+  $(mv /usr/local/sbt-launcher-packaging-$SBT_VERSION /usr/local/sbt || true) \
+  ln -s /usr/local/sbt/bin/* /usr/local/bin/ && \
+  sbt sbt-version || sbt sbtVersion || true
+
+WORKDIR /workspace
+
+CMD "/usr/local/bin/sbt"
+```
+
+```bash
+$ docker build -t davidainslie/scala \
+  --build-arg SCALA_VERSION=2.12.8 \
+  --build-arg SBT_VERSION=1.2.8 \
+  .
+```
+
+The default command is to run sbt (console). Let's just check the new image by overriding the default with bash:
+
+```bash
+$ docker run -it --rm davidainslie/scala /bin/bash
+
+bash-4.4# scala -version
+Scala code runner version 2.12.8 -- Copyright 2002-2018, LAMP/EPFL and Lightbend, Inc.
+
+bash-4.4# sbt sbtVersion
+[warn] No sbt.version set in project/build.properties, base directory: /local
+[info] Set current project to local (in build file:/local/)
+[info] 1.2.8
+```
+
+To have access to our local files, we need to mount a volume from our working directory to somewhere on the running container:
+
+```bash
+$ docker run -it --rm -v `pwd`:/workspace davidainslie/scala
+
+[warn] No sbt.version set in project/build.properties, base directory: /workspace
+[info] Set current project to workspace (in build file:/workspace/)
+[info] sbt server started at local:///root/.sbt/1.0/server/b70d8713e2bc3091a204/sock
+sbt:workspace>
+```
+
+Because of the default command, this lands us in the sbt console.
+
+We add a simple [build.sbt](../docker/scala):
+
+```scala
+name := "first-scala-spark"
+version := "0.1.0"
+scalaVersion := "2.11.12"
+libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.0"
+```
+
+And within the container we **reload** to pick up this file:
+
+```bash
+sbt:workspace> reload
+[info] Loading settings for project workspace from build.sbt ...
+[info] Set current project to first-scala-spark (in build file:/workspace/)
+sbt:first-scala-spark>
 ```
 

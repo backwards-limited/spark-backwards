@@ -2,7 +2,7 @@
 
 ** WARNING WIP**
 
-Within the [docker directory](../docker) of this module run:
+Within the [docker alternative directory](../docker-alternative) of this module run:
 
 ```bash
 $ docker-compose up
