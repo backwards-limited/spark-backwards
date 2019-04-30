@@ -206,7 +206,7 @@ services:
       SPARK_WORKER_WEBUI_PORT: 8080
     command: "/start-worker.sh"
     volumes:
-      - "./:/local"
+      - "./data:/data"
 
 networks:
   spark-network:
@@ -238,7 +238,7 @@ To bring the cluster up, we simply run `docker-compose up`. One of the great thi
 $ docker-compose up --scale spark-worker=3
 ```
 
-## Test Application
+## Test Application - Simple
 
 Let's submit a simple spark job. First make sure our spark containers are up and running (we can start with two workers) by executing our [docker-compose](../docker-compose.yml) file that is within this [module's directory](../):
 
@@ -274,20 +274,28 @@ object SimpleExampleJob extends App {
 
 **Note** environment variables are set within our Spark docker image.
 
+Build this module's JAR - within the top [level module](../..):
+
+```bash
+spark-backwards
+$ sbt "; project spark-and-hadoop-course; package"
+```
+
 To submit this job we use the **spark-submit** utility, which is available in our Spark docker image - when we run and instantiate the image this time, we need to mount a volume to the current working directory of this [module](../) in order to access required resources within the container:
 
 ```bash
+spark-and-hadoop-course
 $ docker run --rm -it -e SPARK_MASTER="spark://spark-master:7077" \
-  -v `pwd`:/project -v `pwd`:/local \
+  -v `pwd`:/app -v `pwd`:/data \
   --network spark-and-hadoop-course_spark-network \
-  -w /project \
+  -w /app \
   davidainslie/spark /bin/bash
 ```
 
 ```bash
 bash-4.4# spark-submit --master $SPARK_MASTER \
   --class com.backwards.spark.SimpleExampleJob \
-  /project/target/scala-2.12/spark-and-hadoop-course_2.12-0.1.0-SNAPSHOT.jar
+  /app/target/scala-2.12/spark-and-hadoop-course_2.12-0.1.0-SNAPSHOT.jar
 
 19/04/29 20:30:00 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
@@ -304,3 +312,37 @@ Lines with a: 62, Lines with b: 31
 ```
 
 ![Job complete](images/job-complete.png)
+
+## Test Application - CSV
+
+The job we shall execute this time is:
+
+```scala
+
+```
+
+Again, build the JAR:
+
+```bash
+spark-backwards
+$ sbt "; project spark-and-hadoop-course; package"
+```
+
+Submit this job with an appropriate CSV file:
+
+```bash
+spark-and-hadoop-course
+$ docker run --rm -it -e SPARK_MASTER="spark://spark-master:7077" \
+  -v `pwd`:/app -v `pwd`/data:/data \
+  --network spark-and-hadoop-course_spark-network \
+  -w /app \
+  davidainslie/spark /bin/bash
+```
+
+```bash
+bash-4.4# spark-submit --master $SPARK_MASTER \
+  --class com.backwards.spark.CSVExampleJob \
+  target/scala-2.12/spark-and-hadoop-course_2.12-0.1.0-SNAPSHOT.jar \
+  /data/UKSA-Oct-18-Transparency-Data.csv
+```
+

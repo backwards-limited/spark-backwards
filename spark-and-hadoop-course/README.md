@@ -17,6 +17,8 @@ Note that this module is within a multi-module project and that there is only on
   - [Docker](docs/setup-docker.md)
   
   - [Docker Alternative](docs/setup-docker-alternative.md)
+  
+  - [Vagrant] TODO
 
   - [Cloud] TODO
 
