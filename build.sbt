@@ -35,6 +35,7 @@ def project(id: String, base: File): Project =
       sbtVersion := BuildProperties("sbt.version"),
       organization := "com.backwards",
       name := id,
+      autoStartServer := false,
       addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.8"),
       libraryDependencies ++= dependencies,
       fork in Test := true,
