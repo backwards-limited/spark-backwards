@@ -7,3 +7,5 @@
 - [Hadoop](docs/hadoop.md)
 
 - [Spark Shell](docs/spark-shell.md)
+
+- [Resilient Distributed Dataset](rdd.md)
