@@ -10,6 +10,12 @@ Example usage included while covering various courses.
 
 - [Setup](docs/setup.md)
 
+- [Introduction](docs/introduction.md)
+
+- [Hadoop](docs/hadoop.md)
+
+- [Spark Shell](docs/spark-shell.md)
+
 - [SparkConf](docs/spark-conf.md)
 
 - [Resilient Distributed Datasets (RDD)](docs/rdd.md)
@@ -19,7 +25,5 @@ Example usage included while covering various courses.
 - [Pair RDD](docs/pair-rdd.md)
 
 - Courses (module per course)
-
-  - [Spark Course](spark-course/README.md)
   
-  - [Spark and Hadoop Course](spark-and-hadoop/README.md)
+  - [Spark and Hadoop Course](courses/spark-and-hadoop/README.md)

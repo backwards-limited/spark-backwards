@@ -3,9 +3,14 @@ import sbt._
 object Dependencies {
   lazy val dependencies: Seq[ModuleID] =
     Seq(
-      scalatest, testcontainers, airframe, pprint, configuration, betterFiles, monocle, avro4s, spark
+      scalatest, testcontainers, airframe, pprint, configuration, scopt, betterFiles, monocle, avro4s, spark
     ).flatten
 
+  lazy val dependenciesOverride: Seq[ModuleID] =
+    Seq(
+      jackson
+    ).flatten
+  
   lazy val scalatest: Seq[ModuleID] = Seq(
     "org.scalatest" %% "scalatest" % "3.0.5" % "test, it"
   )
@@ -30,6 +35,10 @@ object Dependencies {
       "com.github.pureconfig" %% "pureconfig-http4s"
     ).map(_ % version)
   }
+  
+  lazy val scopt: Seq[ModuleID] = Seq(
+    "com.github.scopt" %% "scopt" % "4.0.0-RC2"
+  )
 
   lazy val betterFiles: Seq[ModuleID] = Seq(
     "com.github.pathikrit" %% "better-files" % "3.6.0"
@@ -50,6 +59,16 @@ object Dependencies {
   lazy val avro4s: Seq[ModuleID] = Seq(
     "com.sksamuel.avro4s" %% "avro4s-core" % "2.0.2"
   )
+
+  lazy val jackson: Seq[ModuleID] = {
+    val version = "2.8.8"
+
+    Seq(
+      "com.fasterxml.jackson.core" % "jackson-core",
+      "com.fasterxml.jackson.core" % "jackson-databind",
+      "com.fasterxml.jackson.module" %% "jackson-module-scala"
+    ).map(_ % version force())
+  }
 
   lazy val spark: Seq[ModuleID] = {
     val version = "2.4.2"

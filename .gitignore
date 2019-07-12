@@ -99,3 +99,4 @@ target
 spark-vm/*
 book
 out
+output

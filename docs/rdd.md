@@ -1,6 +1,19 @@
 # Resilient Distributed Datasets (RDD)
 
-- What is a dataset?
+The RDD is the fundamental abstraction in Spark. It represents a collection of elements that is:
+
+- *Immutable* (read-only) 
+- *Resilient* (fault-tolerant) 
+- *Distributed* (dataset spread out to more than one node) 
+
+There are two types of RDD operations: transformations and actions.
+
+- **Transformations** (e.g. filter, map) are operations that produce a new RDD by performing
+  some useful data manipulation on another RDD.
+- **Actions** (e.g. count, foreach, collect) trigger a computation in order to return the result to the calling program or
+  to perform some actions on an RDD’s elements.
+
+- So what is a dataset?
 
   - Essentially it's a collection of data e.g. list of strings, rows in a relational database.
 
@@ -88,4 +101,49 @@ linesWithFriday.first()
   def first(): T
   ```
 
-  
+## Example
+
+We have GitHub archive files under the [github-archive](../src/main/resources/github-archive) directory.
+
+Take a look at one line of one of the files:
+
+```bash
+$ head -n 1 2015-03-01-0.json | jq '.'
+
+{
+  "id": "2614896652",
+  "type": "CreateEvent",
+  "actor": {
+    "id": 739622,
+    "login": "treydock",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/treydock",
+    "avatar_url": "https://avatars.githubusercontent.com/u/739622?"
+  },
+  "repo": {
+    "id": 23934080,
+    "name": "Early-Modern-OCR/emop-dashboard",
+    "url": "https://api.github.com/repos/Early-Modern-OCR/emop-dashboard"
+  },
+  "payload": {
+    "ref": "development",
+    "ref_type": "branch",
+    "master_branch": "master",
+    "description": "",
+    "pusher_type": "user"
+  },
+  "public": true,
+  "created_at": "2015-03-01T00:00:00Z",
+  "org": {
+    "id": 10965476,
+    "login": "Early-Modern-OCR",
+    "gravatar_id": "",
+    "url": "https://api.github.com/orgs/Early-Modern-OCR",
+    "avatar_url": "https://avatars.githubusercontent.com/u/10965476?"
+  }
+}
+```
+
+Note, we are going to use **DataFrame** (there are **DataSet** which are generalized and improved type of DataFrame):
+
+A DataFrame is an RDD that has a schema. You can think of it as a relational database table, in that each column has a name and a known type. The power of DataFrames comes from the fact that, when you create a DataFrame from a structured dataset (in this case, JSON), Spark is able to infer a schema by making a pass over the entire JSON dataset that’s being loaded. Then, when calculating the execution plan, Spark can use the schema and do substantially better computation optimizations.  

@@ -1,22 +1,14 @@
+import com.typesafe.sbt.packager.docker._
 import BuildProperties._
 import Dependencies._
 import sbt._
 
 lazy val root = project("spark-backwards", file("."))
   .settings(description := "Backwards Spark module aggregation - Spark functionality includes example usage in various courses")
-  .aggregate(spark, sparkInAction, sparkAndHadoopCourse)
-
-lazy val spark = project("spark", file("spark"))
-  .settings(description := "Backwards Spark functionality includes example usage in various courses")
-  .settings(javaOptions in Test ++= Seq("-Dconfig.resource=application.test.conf"))
-
-lazy val sparkInAction = project("spark-in-action", file("courses/spark-in-action"))
-  .settings(description := "Spark in Action")
-  .dependsOn(spark % "compile->compile;test->test;it->it")
+  .aggregate(sparkAndHadoopCourse)
 
 lazy val sparkAndHadoopCourse = project("spark-and-hadoop", file("courses/spark-and-hadoop"))
   .settings(description := "Spark and Hadoop Course")
-  .dependsOn(spark % "compile->compile;test->test;it->it")
 
 def project(id: String, base: File): Project =
   Project(id, base)
@@ -40,6 +32,7 @@ def project(id: String, base: File): Project =
       addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
       addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
       libraryDependencies ++= dependencies,
+      dependencyOverrides ++= dependenciesOverride,
       fork := true,
       javaOptions in IntegrationTest ++= environment.map { case (key, value) => s"-D$key=$value" }.toSeq,
       scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),
@@ -69,7 +62,15 @@ def project(id: String, base: File): Project =
         val classpathTestUnmanaged = (unmanagedClasspath in IntegrationTest).value
         val testResources = (resources in IntegrationTest).value
         (fullClasspathCompile.files ++ classpathTestManaged.files ++ classpathTestUnmanaged.files ++ testResources).map(_.getAbsoluteFile).mkString(java.io.File.pathSeparator)
-      },
+      }
+    )
+    .settings(
       packageName in Docker := s"${organization.value}/${name.value}",
-      dockerImageCreationTask := (publishLocal in Docker).value
+      dockerImageCreationTask := (publishLocal in Docker).value,
+      dockerCommands := Seq(
+        Cmd("FROM", "pavanpkulkarni/spark_image:2.2.1"),
+        Cmd("LABEL", s"maintainer=${maintainer.value}"),
+        //Cmd("COPY", s"./target/scala-2.12/", "/opt"),
+        Cmd("COPY", "data/input", "/opt")
+      )
     )

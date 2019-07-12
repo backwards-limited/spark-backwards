@@ -18,6 +18,7 @@ brew install scala
 brew install sbt
 brew install scalacenter/bloop/bloop
 brew install apache-spark
+brew install jq
 brew install httpie
 ```
 
