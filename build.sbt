@@ -1,11 +1,10 @@
-import com.typesafe.sbt.packager.docker._
 import BuildProperties._
 import Dependencies._
 import sbt._
 
 lazy val root = project("spark-backwards", file("."))
   .settings(description := "Backwards Spark module aggregation - Spark functionality includes example usage in various courses")
-  .aggregate(sparkAndHadoopCourse)
+  //.aggregate(sparkAndHadoopCourse)
 
 lazy val sparkAndHadoopCourse = project("spark-and-hadoop", file("courses/spark-and-hadoop"))
   .settings(description := "Spark and Hadoop Course")
@@ -44,6 +43,10 @@ def project(id: String, base: File): Project =
         case PathList(ps @ _*) if ps.last endsWith ".html" => MergeStrategy.first
         case PathList(ps @ _*) if ps.last endsWith "module-info.class" => MergeStrategy.first
         case "application.conf" => MergeStrategy.concat
+        case "codegen/config.fmpp" => MergeStrategy.concat
+        case "git.properties" => MergeStrategy.concat
+        case "parquet.thrift" => MergeStrategy.concat
+        case "plugin.xml" => MergeStrategy.concat
         case x =>
           val oldStrategy = (assemblyMergeStrategy in assembly).value
           oldStrategy(x)
@@ -63,14 +66,4 @@ def project(id: String, base: File): Project =
         val testResources = (resources in IntegrationTest).value
         (fullClasspathCompile.files ++ classpathTestManaged.files ++ classpathTestUnmanaged.files ++ testResources).map(_.getAbsoluteFile).mkString(java.io.File.pathSeparator)
       }
-    )
-    .settings(
-      packageName in Docker := s"${organization.value}/${name.value}",
-      dockerImageCreationTask := (publishLocal in Docker).value,
-      dockerCommands := Seq(
-        Cmd("FROM", "pavanpkulkarni/spark_image:2.2.1"),
-        Cmd("LABEL", s"maintainer=${maintainer.value}"),
-        //Cmd("COPY", s"./target/scala-2.12/", "/opt"),
-        Cmd("COPY", "data/input", "/opt")
-      )
     )

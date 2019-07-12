@@ -20,8 +20,9 @@ echo "+-------------------------------------------------+"
 echo "Creating %s node cluster " "$number_of_nodes"
 echo "+-------------------------------------------------+"
 
-#docker-compose build
-sbt
+sbt assembly
+
+docker-compose build
 
 #docker-compose up -d --scale slave=$number_of_nodes
 #
