@@ -1,15 +1,7 @@
-version: '3'
+version: "3"
 
-  ###############################################################################
-  #DOCKER-COMPOSE
-  ###############################################################################
-  # Docker-compose creates a network that. All the other docker images join this networ, forming a cluster #########
-  # Network name will same as the parent direcotry name #########
-  ############################################################################
-
-  #---------------------------------------
-  # MASTER CONFIGURATION
-  #---------------------------------------
+# Docker-compose creates a network for all the other docker images to join, forming a cluster.
+# Network name will be that of the parent direcotry name.
 
 services:
   master:
@@ -23,30 +15,24 @@ services:
       - 6066:6066
     command: ["/usr/bin/supervisord", "--configuration=/opt/conf/master.conf"]
 
-  #---------------------------------------
-  # SLAVE CONFIGURATION
-  #---------------------------------------
   slave:
     image: pavanpkulkarni/spark_image:2.2.1
     depends_on:
       - master
     ports:
-      - "8081"
+      - 8081
     command: ["/usr/bin/supervisord", "--configuration=/opt/conf/slave.conf"]
     volumes:
-      - ./docker-volume/spark-output/:/opt/output
-      - ./docker-volume/spark-events/:/opt/spark-events
+      - ./data/output/:/opt/output
+      - ./data/events/:/opt/spark-events
 
-  #---------------------------------------
-  # HISTORY SERVER CONFIGURATION
-  #---------------------------------------
   history-server:
     image: pavanpkulkarni/spark_image:2.2.1
     container_name: history-server
     depends_on:
       - master
     ports:
-      - "18080:18080"
+      - 18080:18080
     command: ["/usr/bin/supervisord", "--configuration=/opt/conf/history-server.conf"]
     volumes:
-      - ./docker-volume/spark-events:/opt/spark-events
+      - ./data/events:/opt/spark-events
