@@ -97,6 +97,7 @@ hs_err_pid*
 target
 
 spark-vm/*
+spark-in-action
 book
 out
 output

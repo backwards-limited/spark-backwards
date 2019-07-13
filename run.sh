@@ -1,31 +1,31 @@
 #!/bin/bash
 
 # Create n node cluster with default configurations
-number_of_nodes=3
+numberOfNodes=3
 
 echo "+-------------------------------------------------+"
-echo "Creating %s node cluster " "$number_of_nodes"
+echo "Creating $numberOfNodes node cluster "
 echo "+-------------------------------------------------+"
 
-sbt assembly
+sbt clean assembly
 
 docker-compose build
 
-docker-compose up -d --scale slave=$number_of_nodes
+docker-compose up -d --scale slave=${numberOfNodes}
 
 echo ""
 echo "+----------------------------------------------------+"
-echo "  %s node cluster up and running    " "$number_of_nodes"
+echo "  $numberOfNodes node cluster up and running    "
 echo "  Check status of nodes running 'docker ps -a'        "
 echo "+----------------------------------------------------+"
 echo ""
 
-echo " wait for 10 seconds before executing the Spark Job .........  "
+echo " Wait for 10 seconds before executing the Spark Job .........  "
 sleep 10
 
 # Run the job on the cluster
 echo "+----------------------------------------------------------+"
-echo "  Executing Spark job on %s node cluster " "$number_of_nodes"
+echo "  Executing Spark job on $numberOfNodes node cluster "
 echo "+----------------------------------------------------------+"
 
 docker exec master /opt/spark/bin/spark-submit \

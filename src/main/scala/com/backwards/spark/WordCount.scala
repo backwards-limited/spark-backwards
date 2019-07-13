@@ -27,7 +27,7 @@ object WordCount {
 
       val spark = SparkSession
         .builder()
-        //.master("local") // uncomment this line when running on local
+        //.master("local") // Uncomment this line when running on local
         .appName("word-count")
         .getOrCreate()
 
