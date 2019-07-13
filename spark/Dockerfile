@@ -2,24 +2,24 @@ FROM ubuntu:18.04
 
 LABEL authors="dainslie@gmail.com"
 
-RUN apt-get -y update \
-  && apt-get -y upgrade \
+RUN apt-get update
+
+# This step will install java 8 on the image
+RUN apt-get install software-properties-common -y \
+  && apt-add-repository ppa:webupd8team/java -y \
   && apt-get install -y wget \
-  && apt-get install -y software-properties-common
+  && apt-get update -y \
+  && add-apt-repository ppa:openjdk-r/ppa \
+  && apt-get update \
+  && apt-get install -y openjdk-8-jdk supervisor
 
-RUN apt-get install -y openssh-server apache2 supervisor
-RUN mkdir -p /var/lock/apache2 /var/run/apache2 /var/run/sshd /var/log/supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-RUN apt-get install -y openjdk-8-jdk
-
-ENV SPARK_VERSION 2.4.1
+ENV SPARK_VERSION 2.4.3
 ENV HADOOP_VERSION 2.7
 
-# Download and extract Spark
+# download and extract Spark
 RUN wget https://archive.apache.org/dist/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz \
-  &&  tar -xzf spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz \
-  &&  mv spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION /opt/spark
+  && tar -xzf spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz \
+  && mv spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION /opt/spark
 
 # Set spark home
 ENV SPARK_HOME /opt/spark
@@ -29,9 +29,6 @@ ENV PATH $SPARK_HOME/bin:$PATH
 COPY master.conf /opt/conf/master.conf
 COPY slave.conf /opt/conf/slave.conf
 COPY history-server.conf /opt/conf/history-server.conf
-
-COPY log4j.properties /opt/conf/log4j.properties
-COPY log4j.properties /opt/spark/conf/log4j.properties
 
 # Adding configurations for history server
 COPY spark-defaults.conf /opt/spark/conf/spark-defaults.conf

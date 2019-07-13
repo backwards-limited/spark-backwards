@@ -20,8 +20,8 @@ echo "  Check status of nodes running 'docker ps -a'        "
 echo "+----------------------------------------------------+"
 echo ""
 
-echo " Wait for 10 seconds before executing the Spark Job .........  "
-sleep 10
+echo " Wait for 30 seconds before executing the Spark Job .........  "
+sleep 30
 
 # Run the job on the cluster
 echo "+----------------------------------------------------------+"
