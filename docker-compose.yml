@@ -1,38 +1,95 @@
 version: "3"
 
-# Docker-compose creates a network for all the other docker images to join, forming a cluster.
-# Network name will be that of the parent directory name.
-
 services:
-  master:
-    build: .
-    image: davidainslie/spark
-    container_name: master
+  spark-master:
+    image: bde2020/spark-master:2.4.1-hadoop2.7
+    container_name: spark-master
     ports:
       - 4040:4040
       - 7077:7077
       - 8080:8080
       - 6066:6066
-    command: ["/usr/bin/supervisord", "--configuration=/opt/conf/master.conf"]
-
-  slave:
-    image: davidainslie/spark
-    depends_on:
-      - master
-    ports:
-      - 8081
-    command: ["/usr/bin/supervisord", "--configuration=/opt/conf/slave.conf"]
+    environment:
+      INIT_DAEMON_STEP: setup_spark
+      SPARK_LOCAL_IP: spark-master
+      SPARK_MASTER_IP: 10.5.0.2
+      SPARK_MASTER_HOST: 10.5.0.2
     volumes:
-      - ./data/output/:/opt/output
-      - ./data/events/:/opt/spark-events
+      - ./target/scala-2.12/:/var/tmp
+      - ./data/input/:/var/tmp
+      - ./data/output/:/var/tmp/output
+      - ./data/events/:/var/tmp/spark-events
+    networks:
+      spark-network:
+        ipv4_address: 10.5.0.2
 
-  history-server:
-    image: davidainslie/spark
-    container_name: history-server
+  spark-worker-1:
+    image: bde2020/spark-worker:2.4.1-hadoop2.7
+    container_name: spark-worker-1
     depends_on:
-      - master
+      - spark-master
     ports:
-      - 18080:18080
-    command: ["/usr/bin/supervisord", "--configuration=/opt/conf/history-server.conf"]
+      - 8081:8081
+    environment:
+      SPARK_MASTER: spark://spark-master:7077
+      SPARK_LOCAL_IP: spark-worker-1
+      SPARK_MASTER_IP: 10.5.0.2
+      SPARK_MASTER_HOST: 10.5.0.2
     volumes:
-      - ./data/events:/opt/spark-events
+      - ./target/scala-2.12/:/var/tmp
+      - ./data/input/:/var/tmp
+      - ./data/output/:/var/tmp/output
+      - ./data/events/:/var/tmp/spark-events
+    networks:
+      spark-network:
+        ipv4_address: 10.5.0.3
+
+  spark-worker-2:
+    image: bde2020/spark-worker:2.4.1-hadoop2.7
+    container_name: spark-worker-2
+    depends_on:
+      - spark-master
+    ports:
+      - 8082:8081
+    environment:
+      SPARK_MASTER: spark://spark-master:7077
+      SPARK_LOCAL_IP: spark-worker-2
+      SPARK_MASTER_IP: 10.5.0.2
+      SPARK_MASTER_HOST: 10.5.0.2
+    volumes:
+      - ./target/scala-2.12/:/var/tmp
+      - ./data/input/:/var/tmp
+      - ./data/output/:/var/tmp/output
+      - ./data/events/:/var/tmp/spark-events
+    networks:
+      spark-network:
+        ipv4_address: 10.5.0.4
+
+  spark-worker-3:
+    image: bde2020/spark-worker:2.4.1-hadoop2.7
+    container_name: spark-worker-3
+    depends_on:
+      - spark-master
+    ports:
+      - 8083:8081
+    environment:
+      SPARK_MASTER: spark://spark-master:7077
+      SPARK_LOCAL_IP: spark-worker-3
+      SPARK_MASTER_IP: 10.5.0.2
+      SPARK_MASTER_HOST: 10.5.0.2
+    volumes:
+      - ./target/scala-2.12/:/var/tmp
+      - ./data/input/:/var/tmp
+      - ./data/output/:/var/tmp/output
+      - ./data/events/:/var/tmp/spark-events
+    networks:
+      spark-network:
+        ipv4_address: 10.5.0.5
+
+networks:
+  spark-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.5.0.0/16

@@ -24,6 +24,8 @@ Example usage included while covering various courses.
 
 - [Pair RDD](docs/pair-rdd.md)
 
-- Courses (module per course)
+- Courses (module per course/book)
   
-  - [Spark and Hadoop Course](courses/spark-and-hadoop/README.md)
+  - [Learning Spark](courses/learning-spark/README.md)
+  
+  - [Spark and Hadoop](courses/spark-and-hadoop/README.md)

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+SPARK_MASTER_IP=10.5.0.2
+SPARK_MASTER_HOST=10.5.0.2

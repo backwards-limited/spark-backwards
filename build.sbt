@@ -4,7 +4,11 @@ import sbt._
 
 lazy val root = project("spark-backwards", file("."))
   .settings(description := "Backwards Spark module aggregation - Spark functionality includes example usage in various courses")
-  //.aggregate(sparkAndHadoopCourse)
+  .aggregate(learningSpark)
+  // .aggregate(sparkAndHadoopCourse)
+
+lazy val learningSpark = project("learning-spark", file("courses/learning-spark"))
+  .settings(description := "Learning Spark Book")
 
 lazy val sparkAndHadoopCourse = project("spark-and-hadoop", file("courses/spark-and-hadoop"))
   .settings(description := "Spark and Hadoop Course")
@@ -27,7 +31,7 @@ def project(id: String, base: File): Project =
       organization := "com.backwards",
       name := id,
       autoStartServer := false,
-      triggeredMessage := Watched.clearWhenTriggered,
+      watchTriggeredMessage := Watch.clearScreenOnTrigger,
       addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
       addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
       libraryDependencies ++= dependencies,

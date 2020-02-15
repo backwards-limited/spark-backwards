@@ -1,29 +1,21 @@
 FROM ubuntu:18.04
 
-LABEL authors="dainslie@gmail.com"
-
-RUN apt-get update
-
-# This step will install java 8 on the image
-RUN apt-get install software-properties-common -y \
-  && apt-add-repository ppa:webupd8team/java -y \
-  && apt-get install -y wget \
-  && apt-get update -y \
-  && add-apt-repository ppa:openjdk-r/ppa \
-  && apt-get update \
-  && apt-get install -y openjdk-8-jdk supervisor
-
 ENV SPARK_VERSION 2.4.3
 ENV HADOOP_VERSION 2.7
 
-# download and extract Spark
-RUN wget https://archive.apache.org/dist/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz \
-  && tar -xzf spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz \
-  && mv spark-$SPARK_VERSION-bin-hadoop$HADOOP_VERSION /opt/spark
+# Run the following commands on my Linux machine install the below packages on the ubuntu image
+RUN apt-get update -qq && \
+    apt-get install -qq -y gnupg2 wget openjdk-8-jdk supervisor scala
 
-# Set spark home
-ENV SPARK_HOME /opt/spark
-ENV PATH $SPARK_HOME/bin:$PATH
+# Download the Spark binaries from the repo
+WORKDIR /
+
+RUN wget --no-verbose http://www.gtlib.gatech.edu/pub/apache/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz
+
+# Untar the downloaded binaries , move them the folder name spark and add the spark bin on my class path
+RUN tar -xzf /spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz && \
+    mv spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} /opt/spark && \
+    echo "export PATH=$PATH:/opt/spark/bin" >> ~/.bashrc
 
 # Adding conf files to all images. This will be used in supervisord for running spark master/slave
 COPY master.conf /opt/conf/master.conf
@@ -34,7 +26,7 @@ COPY history-server.conf /opt/conf/history-server.conf
 COPY spark-defaults.conf /opt/spark/conf/spark-defaults.conf
 RUN  mkdir -p /opt/spark-events
 
-# Expose port 8080 for spark UI
+# Expose the UI Port 4040
 EXPOSE 4040 6066 7077 8080 18080 8081
 
 # Default command: this is just an option

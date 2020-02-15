@@ -9,9 +9,9 @@ echo "+-------------------------------------------------+"
 
 sbt clean assembly
 
-docker-compose build
-
-docker-compose up -d --scale slave=${numberOfNodes}
+#docker-compose build
+#
+#docker-compose up -d --scale slave=${numberOfNodes}
 
 echo ""
 echo "+----------------------------------------------------+"
@@ -20,20 +20,20 @@ echo "  Check status of nodes running 'docker ps -a'        "
 echo "+----------------------------------------------------+"
 echo ""
 
-echo " Wait for 30 seconds before executing the Spark Job .........  "
-sleep 30
+echo " Wait for 10 seconds before executing the Spark Job .........  "
+#sleep 10
 
 # Run the job on the cluster
 echo "+----------------------------------------------------------+"
 echo "  Executing Spark job on $numberOfNodes node cluster "
 echo "+----------------------------------------------------------+"
 
-docker exec master /opt/spark/bin/spark-submit \
+docker exec spark-master /spark/bin/spark-submit \
   --class com.backwards.spark.WordCount \
-  --master spark://master:6066 \
+  --master spark://spark-master:6066 \
   --deploy-mode cluster \
   --verbose \
-  /opt/spark-backwards.jar --input /opt/sample.txt --output /opt/output
+  /var/tmp/spark-backwards.jar --input /var/tmp/sample.txt --output /var/tmp/output
 
 echo ""
 echo "+----------------------------------------------------------------+"
