@@ -63,3 +63,107 @@ scala>
 
 Spark computations are expressed as operations. These operations are then converted into low-level RDD-based bytecode as tasks, which are then distributed to Spark’s workers for execution.
 
+| **Term**     | **Meaning**                                                  |
+| ------------ | ------------------------------------------------------------ |
+| Application  | User program built on Spark using its APIs. It consists of a driver program and executors on the cluster |
+| SparkSession | SparkSession object provides a point of entry to interact with underlying Spark functionality and allows programming Spark with its APIs. In an interactive Spark shell, the Spark driver instantiates a SparkSession for you, while in a Spark application, you create a SparkSession object. |
+| Job          | A parallel computation consisting of multiple tasks that gets spawned in response to a Spark action (e.g., save, collect) |
+| Stage        | Each job gets divided into smaller sets of tasks called stages that depend on each other. |
+| Task         | A single unit of work or execution that will be sent to a Spark Executor. |
+
+## Transformations, Actions, and Lazy Evaluation
+
+![Transformations and Actions](images/transformation-and-actions.png)
+
+Spark operations on distributed data can be classified into two types: *transformations* and *actions*. Transformations, as the name suggests, transform Spark’s DataFrame into a new DataFrame without altering the original data, giving it the property of immutability.
+
+By contrast, an *action* triggers the lazy evaluation of all the transformations recorded. In the above figure, all transformations T are recorded until the action A is invoked. Each transformation T produces a new DataFrame.
+
+While lazy evaluation allows Spark to optimize your query, by peeking into your chained transformations, lineage and data immutability provide fault-tolerance.
+
+Some examples of *transformations* and *actions* are:
+
+| **Transformations** | **Actions** |
+| ------------------- | ----------- |
+| *orderBy*           | *show*      |
+| *groupBy*           | *take*      |
+| *filter*            | *count*     |
+| *select*            | *collect*   |
+| *join*              | *save*      |
+
+Together with *actions*, *transformations* contribute to a Spark query plan, but nothing is executed until an *action* is invoked.
+
+For example, the following has two *transformations* (read() and filter()) and one *action* (count() which actually triggers the execution plan):
+
+```python
+>>> strings = spark.read.text("README.md")
+>>> filtered = strings.filter(strings.value.contains("Spark"))
+>>> filtered.count()
+20
+```
+
+## Spark UI
+
+Spark includes a graphical user interface to inspect or monitor Spark applications in their various stages of decomposition. In local mode, you can access this interface at **http://<localhost>:4040** in a web browser.
+
+**Note**: When you launch spark-shell, part of the output shows the localhost URL to access at port 4040.
+
+Start a **pyspark** session and open your browser:
+
+![UI](images/ui.png)
+
+Execute the following:
+
+```python
+>>> strings = spark.read.text("README.md")
+>>> filtered = strings.filter(strings.value.contains("Spark"))
+>>> filtered.count()
+20
+```
+
+and take a look at the UI having expanded **DAG Visualization**:
+
+![Job UI](images/job-ui.png)
+
+As well as testing locally, we can utilise a community instance of Spark provided by [Databricks](https://databricks.com/try), which seems to only work in Chrome.
+
+## First Standalone Application
+
+From your local machine in the installation directory, you can run one of the several sample programs; use **bin/run-example <class> [params]** to run one of many examples provided e.g.
+
+```bash
+➜ ls -las examples/src/main/java/org/apache/spark/examples
+...
+ 8 -rw-r--r--@  1 davidainslie  staff  1968 17 Dec 03:48 JavaWordCount.java
+
+➜ ./bin/run-example JavaWordCount README.md
+```
+
+and there are Scala and Python examples:
+
+```bash
+➜ ls -las examples/src/main/scala/org/apache/spark/examples
+...
+ 8 -rw-r--r--@  1 davidainslie  staff  1550 17 Dec 03:48 SparkPi.scala
+ 
+➜ ./bin/run-example SparkPi
+```
+
+## Building Standalone Applications in Scala
+
+Let's build and deploy the [M&M](../modules/mnmcount) Count module:
+
+```bash
+spark-backwards/courses/learning-spark/modules/mnmcount 
+➜ sbt clean package
+```
+
+Then we can submit the generated JAR:
+
+```bash
+spark-backwards/courses/learning-spark/modules/mnmcount 
+➜ spark-submit --class com.backwards.myspark.MnmCount target/scala-2.12/mnmcount_2.12-0.1.0-SNAPSHOT.jar data/mnm_dataset.csv
+```
+
+
+
