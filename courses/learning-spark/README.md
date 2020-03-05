@@ -9,3 +9,5 @@ Note that this module is within a multi-module project and that there is only on
 - [Introduction](docs/introduction.md)
 
 - [Installation](docs/installation.md)
+
+- [DataFrames and Datasets](docs/dataframes-datasets.md)

@@ -1,12 +1,15 @@
 import BuildProperties._
-import Dependencies._
 import sbt._
 
 lazy val root = project("spark-backwards", file("."))
   .settings(description := "Backwards Spark module aggregation - Spark functionality includes example usage in various courses")
+  .aggregate(apacheSparkQuickStartGuide)
   .aggregate(learningSpark)
   .aggregate(mnmcount)
   // .aggregate(sparkAndHadoopCourse)
+
+lazy val apacheSparkQuickStartGuide = project("apache-spark-quick-start-guide", file("courses/apache-spark-quick-start-guide"))
+  .settings(description := "Apache Spark Quick Start Guide Book")
 
 lazy val learningSpark = project("learning-spark", file("courses/learning-spark"))
   .settings(description := "Learning Spark Book")
@@ -38,8 +41,8 @@ def project(id: String, base: File): Project =
       watchTriggeredMessage := Watch.clearScreenOnTrigger,
       addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
       addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
-      libraryDependencies ++= dependencies,
-      dependencyOverrides ++= dependenciesOverride,
+      libraryDependencies ++= Dependencies(),
+      dependencyOverrides ++= Dependencies.overrides,
       fork := true,
       javaOptions in IntegrationTest ++= environment.map { case (key, value) => s"-D$key=$value" }.toSeq,
       scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),

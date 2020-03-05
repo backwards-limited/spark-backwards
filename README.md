@@ -25,6 +25,8 @@ Example usage included while covering various courses.
 - [Pair RDD](docs/pair-rdd.md)
 
 - Courses (module per course/book)
+
+  - [Apache Spark Quick Start Guide](courses/apache-spark-quick-start-guide/README.md)
   
   - [Learning Spark](courses/learning-spark/README.md)
   

@@ -1,39 +1,38 @@
 import sbt._
 
 object Dependencies {
-  lazy val dependencies: Seq[ModuleID] =
-    Seq(
-      scalatest, testcontainers, airframe, pprint, configuration, scopt, betterFiles, monocle, avro4s, spark
-    ).flatten
+  def apply(): Seq[sbt.ModuleID] = Seq(
+    scalatest, testcontainers, airframe, pprint, configuration, scopt, betterFiles, monocle, avro4s, spark
+  ).flatten
 
-  lazy val dependenciesOverride: Seq[ModuleID] =
-    Seq(
-      jackson
-    ).flatten
+  def overrides: Seq[ModuleID] = Seq(
+    jackson
+  ).flatten
   
   lazy val scalatest: Seq[ModuleID] = Seq(
-    "org.scalatest" %% "scalatest" % "3.0.5" % "test, it"
+    "org.scalatest" %% "scalatest" % "3.1.1" % "test, it"
   )
 
   lazy val testcontainers: Seq[ModuleID] = Seq(
-    "org.testcontainers" % "testcontainers" % "1.9.1" % "test, it"
+    "org.testcontainers" % "testcontainers" % "1.12.5" % "test, it"
   )
 
   lazy val airframe: Seq[ModuleID] = Seq(
-    "org.wvlet.airframe" %% "airframe-log" % "0.69"
+    "org.wvlet.airframe" %% "airframe-log" % "20.2.1"
   )
 
   lazy val pprint: Seq[ModuleID] = Seq(
-    "com.lihaoyi" %% "pprint" % "0.5.3" % "test, it"
+    "com.lihaoyi" %% "pprint" % "0.5.9" % "test, it"
   )
 
   lazy val configuration: Seq[ModuleID] = {
-    val version = "0.9.2"
+    val group = "com.github.pureconfig"
+    val version = "0.12.2"
 
     Seq(
-      "com.github.pureconfig" %% "pureconfig",
-      "com.github.pureconfig" %% "pureconfig-http4s"
-    ).map(_ % version)
+      "pureconfig",
+      "pureconfig-http4s"
+    ).map(group %% _ % version)
   }
   
   lazy val scopt: Seq[ModuleID] = Seq(
@@ -41,19 +40,20 @@ object Dependencies {
   )
 
   lazy val betterFiles: Seq[ModuleID] = Seq(
-    "com.github.pathikrit" %% "better-files" % "3.6.0"
+    "com.github.pathikrit" %% "better-files" % "3.8.0"
   )
   
   lazy val monocle: Seq[ModuleID] = {
-    val version = "1.5.0"
+    val group = "com.github.julien-truffaut"
+    val version = "2.0.2"
 
     Seq(
-      "com.github.julien-truffaut" %% "monocle-law"
-    ).map(_ % version % "test, it") ++ Seq(
-      "com.github.julien-truffaut" %% "monocle-core",
-      "com.github.julien-truffaut" %% "monocle-macro",
-      "com.github.julien-truffaut" %% "monocle-generic"
-    ).map(_ % version)
+      "monocle-law"
+    ).map(group %% _ % version % "test, it") ++ Seq(
+      "monocle-core",
+      "monocle-macro",
+      "monocle-generic"
+    ).map(group %% _ % version)
   }
 
   lazy val avro4s: Seq[ModuleID] = Seq(
@@ -61,26 +61,28 @@ object Dependencies {
   )
 
   lazy val jackson: Seq[ModuleID] = {
+    val group = "com.fasterxml.jackson.core"
     val version = "2.8.8"
 
     Seq(
-      "com.fasterxml.jackson.core" % "jackson-core",
-      "com.fasterxml.jackson.core" % "jackson-databind",
-      "com.fasterxml.jackson.module" %% "jackson-module-scala"
-    ).map(_ % version force())
+      "jackson-core",
+      "jackson-databind",
+      "jackson-module-scala"
+    ).map(group %% _ % version force())
   }
 
   lazy val spark: Seq[ModuleID] = {
-    val version = "2.4.1"
+    val group = "org.apache.spark"
+    val version = "2.4.5"
 
     Seq(
-      "org.apache.spark" %% "spark-core",
-      "org.apache.spark" %% "spark-sql",
-      "org.apache.spark" %% "spark-streaming",
-      "org.apache.spark" %% "spark-mllib",
-      "org.apache.spark" %% "spark-hive",
-      "org.apache.spark" %% "spark-graphx",
-      "org.apache.spark" %% "spark-repl"
-    ).map(_ % version)
+      "spark-core",
+      "spark-sql",
+      "spark-streaming",
+      "spark-mllib",
+      "spark-hive",
+      "spark-graphx",
+      "spark-repl"
+    ).map(group %% _ % version)
   }
 }
