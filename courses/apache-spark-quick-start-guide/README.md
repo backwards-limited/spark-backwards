@@ -14,4 +14,8 @@ Note that this module is within a multi-module project and that there is only on
   
   - [Virtualbox](docs/installation-virtualbox.md)
   
-  - [RDD](docs/rdd.md)
+- [RDD](docs/rdd.md)
+
+- [Transformations](docs/transformations.md)
+
+- [Actions](docs/actions.md)
