@@ -10,12 +10,20 @@ Note that this module is within a multi-module project and that there is only on
 
 - Installation
 
-  - [AWS](docs/installation-aws.md)
+    - [AWS](docs/installation-aws.md)
   
-  - [Virtualbox](docs/installation-virtualbox.md)
+    - [Virtualbox](docs/installation-virtualbox.md)
   
-- [RDD](docs/rdd.md)
+- [RDD](docs/rdd/rdd.md)
 
-- [Transformations](docs/transformations.md)
+    - [Transformations](docs/rdd/transformations.md)
 
-- [Actions](docs/actions.md)
+    - [Actions](docs/rdd/actions.md)
+
+    - [Caching and Checkpointing](docs/rdd/caching-checkpointing.md)
+
+    - [Partioning](docs/rdd/partioning.md)
+    
+- [DataFrame and Dataset](docs/dataframe-dataset/dataframe-dataset.md) 
+
+    - [DataFrame](docs/dataframe-dataset/dataframe.md)   

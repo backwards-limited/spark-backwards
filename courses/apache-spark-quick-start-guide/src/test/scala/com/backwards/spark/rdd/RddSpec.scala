@@ -1,4 +1,4 @@
-package com.backwards.myspark
+package com.backwards.spark.rdd
 
 import better.files.File
 import org.apache.spark.sql.SparkSession
