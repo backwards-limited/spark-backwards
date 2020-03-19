@@ -37,6 +37,8 @@ At this point we can navigate to the Sandbox UI in our browser. But first, as th
 
 ```bash
 echo '127.0.0.1 sandbox.hortonworks.com' | sudo tee -a /etc/hosts
+
+echo '127.0.0.1 sandbox-hdp.hortonworks.com' | sudo tee -a /etc/hosts
 ```
 
 and open a browser at [sandbox.hortonworks.com:8080](sandbox.hortonworks.com:8080) where the login is **maria_dev/maria_dev**:
