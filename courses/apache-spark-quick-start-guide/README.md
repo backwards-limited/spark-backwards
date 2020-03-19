@@ -26,4 +26,10 @@ Note that this module is within a multi-module project and that there is only on
     
 - [DataFrame and Dataset](docs/dataframe-dataset/dataframe-dataset.md) 
 
-    - [DataFrame](docs/dataframe-dataset/dataframe.md)   
+    - [DataFrame](docs/dataframe-dataset/dataframe.md)  
+    
+    - [Dataset](docs/dataframe-dataset/dataset.md)
+    
+- [Complete Example](docs/complete-example.md)    
+    
+- [Spark Architecture and Application Execution Flow](docs/architecture-and-execution.md)
