@@ -22,6 +22,9 @@ lazy val root = Project("sales", file("."))
       "org.apache.spark" %% "spark-sql" % sparkVersion
     ),
     artifactName := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
-      artifact.name + "_" + sv.binary + "-" + sparkVersion + "_" + module.revision + "." + artifact.extension
+      s"${artifact.name}_${sv.binary}_${module.revision}.${artifact.extension}"
     }
+    /*artifactName := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
+      s"${artifact.name}_${sv.binary}-${sparkVersion}_${module.revision}.${artifact.extension}"
+    }*/
   )
