@@ -9,9 +9,11 @@ The RDD is the fundamental abstraction in Spark. It represents a collection of e
 There are two types of RDD operations: transformations and actions.
 
 - **Transformations** (e.g. filter, map) are operations that produce a new RDD by performing
-  some useful data manipulation on another RDD.
+  some useful data manipulation on another RDD - These are **lazy**.
 - **Actions** (e.g. count, foreach, collect) trigger a computation in order to return the result to the calling program or
-  to perform some actions on an RDD’s elements.
+  to perform some actions on an RDD’s elements - These are **eager**.
+  
+Laziness/Eagerness is how we can limit network communication using the programming model.  
 
 - So what is a dataset?
 

@@ -3,8 +3,13 @@ import sbt._
 
 lazy val root = project("spark-backwards", file("."))
   .settings(description := "Backwards Spark module aggregation - Spark functionality includes example usage in various courses")
-  .aggregate(apacheSparkQuickStartGuide, sales)
-  .aggregate(learningSpark, mnmcount)
+  .aggregate(bigDataAnalysisWithScalaAndSpark)
+  /*.aggregate(apacheSparkQuickStartGuide, sales)
+  .aggregate(learningSpark, mnmcount)*/
+
+lazy val bigDataAnalysisWithScalaAndSpark = project("big-data-analysis-with-scala-and-spark", file("courses/big-data-analysis-with-scala-and-spark"))
+
+// Currently not aggregated and so ignored
 
 lazy val apacheSparkQuickStartGuide = project("apache-spark-quick-start-guide", file("courses/apache-spark-quick-start-guide"))
   .settings(description := "Apache Spark Quick Start Guide Book")
@@ -16,7 +21,6 @@ lazy val learningSpark = project("learning-spark", file("courses/learning-spark"
 
 lazy val mnmcount = project("mnmcount", file("courses/learning-spark/modules/mnmcount"))
 
-// Currently not aggregated and so ignored
 lazy val sparkAndHadoopCourse = project("spark-and-hadoop", file("courses/spark-and-hadoop"))
   .settings(description := "Spark and Hadoop Course")
 

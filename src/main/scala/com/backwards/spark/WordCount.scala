@@ -2,7 +2,7 @@ package com.backwards.spark
 
 import monocle.macros.syntax.lens._
 import scopt.OptionParser
-import org.apache.spark.sql.{SaveMode, SparkSession}
+import org.apache.spark.sql.{Dataset, KeyValueGroupedDataset, SaveMode, SparkSession}
 
 /**
   * sbt "runMain com.backwards.spark.WordCount --input ./data/input/sample.txt --output ./data/output"
@@ -25,7 +25,7 @@ object WordCount {
       val input = config.input
       val output = config.output
 
-      val spark = SparkSession
+      val spark: SparkSession = SparkSession
         .builder()
         //.master("local") // Uncomment this line when running on local
         .appName("word-count")
@@ -34,11 +34,11 @@ object WordCount {
       import spark.implicits._
 
       // Read some example file to a test RDD
-      val data = spark.read.text(input).as[String]
+      val data: Dataset[String] = spark.read.text(input).as[String]
 
-      val words = data.flatMap(value => value.split("\\s+"))
-      val groupWords = words.groupByKey(_.toLowerCase)
-      val counts = groupWords.count()
+      val words: Dataset[String] = data.flatMap(value => value.split("\\s+"))
+      val groupWords: KeyValueGroupedDataset[String, String] = words.groupByKey(_.toLowerCase)
+      val counts: Dataset[(String, Long)] = groupWords.count()
       counts.show()
 
       counts.coalesce(1).write.mode(SaveMode.Overwrite).csv(output)

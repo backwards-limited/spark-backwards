@@ -8,7 +8,8 @@ object Sales {
     val spark = SparkSession
       .builder
       .appName("Sales")
-      .config("spark.master", "local")
+      // .config("spark.master", "local")
+      .config("spark.scheduler.mode", "FAIR")
       .getOrCreate
 
     // For implicit conversions like converting RDDs to DataFrames and SQL encoders (as needed below)

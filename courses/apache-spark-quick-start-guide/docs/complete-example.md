@@ -141,22 +141,25 @@ We **scp**:
 
 ```bash
 spark-backwards/courses/apache-spark-quick-start-guide/modules/sales
-➜ scp -P 2222 target/scala-2.12/sales_2.12-3.0.0-preview2_0.1.0-SNAPSHOT.jar root@sandbox.hortonworks.com:/root
+➜ cd target/scala-2.12
+
+spark-backwards/courses/apache-spark-quick-start-guide/modules/sales/target/scala-2.12
+➜ scp -P 2222 sales_2.12_0.1.0-SNAPSHOT.jar root@sandbox.hortonworks.com:/root
 root@sandbox.hortonworks.com's password:
-sales_2.12-3.0.0-preview2_0.1.0-SNAPSHOT.jar
+sales_2.12_0.1.0-SNAPSHOT.jar
 
 ```
 
 SSH again:
 
 ```bash
-spark-backwards/courses/apache-spark-quick-start-guide/modules/sales on  master [!+?] at ☸️ docker-desktop
+spark-backwards/courses/apache-spark-quick-start-guide/modules/sales
 ➜ ssh root@sandbox.hortonworks.com -p 2222
 root@sandbox.hortonworks.com's password:
 Last login: Thu Mar 19 19:41:43 2020 from 172.18.0.3
 [root@sandbox-hdp ~]# ls -las
 ...
-4 -rw-r--r-- 1 root root 2639 Mar 19 19:45 sales_2.12-3.0.0-preview2_0.1.0-SNAPSHOT.jar
+4 -rw-r--r-- 1 root root 2639 Mar 19 19:45 sales_2.12_0.1.0-SNAPSHOT.jar
 ```
 
 ## Spark Submit
@@ -167,7 +170,7 @@ Finally we can submit our job:
 [root@sandbox-hdp ~]# spark-submit \
   --class com.backwards.sales.Sales \
   --master local \
-  ./sales_2.12-3.0.0-preview2_0.1.0-SNAPSHOT.jar
+  ./sales_2.12_0.1.0-SNAPSHOT.jar
   
 SPARK_MAJOR_VERSION is set to 2, using Spark2
 20/03/19 13:19:24 INFO SparkContext: Running Spark version 2.3.1.3.0.1.0-187
