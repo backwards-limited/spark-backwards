@@ -1,5 +1,7 @@
 # Partitioning and Shuffling
 
+## Shuffling
+
 ```scala
 val pairs = sc.parallelize(List(1 -> "one", 2 -> "two", 3 -> "three"))
 
@@ -88,3 +90,117 @@ And reduce again after shuffle:
 ![Benchmark](images/benchmark.png)
 
 > As a sidenote, "how does Spark know which key to put on which machine when using say groupByKey?" - think Kafka. By default, Spark uses **hash partitioning** to determine which key-value pair should be sent to which machine.
+
+## Partitioning
+
+The data within a RDD is split into several partitions.
+
+Properties of partitions:
+- Partitions never span multiple machines i.e. tuples in the same partition are guaranteed to be on the same machine.
+- Each machine in the cluster contains one or more partitions.
+- The number of partitions to use is configurable; by default it equals the total number of cores on all executor nodes.
+
+Two kinds of partitioning are available in Spark:
+- Hash partitioning.
+- Range partitioning.
+
+**NOTE - Customising partitioning is only possible on Pair RDDs; this is because partitioning is based on keys.**
+
+#### Hash Partitioning
+
+Following on from the above examples:
+
+```scala
+val purchasesPerCustomer =
+  purchasesRdd
+    .map(purchase => purchase.customerId -> purchase.price) // Pair RDD
+    .groupByKey()
+```
+**groupByKey** first computes per tuple (k, v) its partition p:
+```scala
+p = k.hashCode() % numPartitions
+```
+
+Then, all tuples in the same partition **p** are sent to the machine hosting **p**.
+
+So, hash partitioning attempts to spread data evenly across partitions based on the key.
+
+Example: Consider a Pair RDD with keys
+
+[8, 96, 240, 400, 401, 800]
+
+and a desired number of partitions of 4. To keep thing simple assume that **hashCode** is the identity i.e. **n.hashCode() == n**.
+In this case, hash partitioning distributes the keys as follows amoung the partitions:
+- partition 0: [8, 96, 240, 400, 800]
+- partition 1: [401]
+- partition 2: []
+- partition 3: []
+
+The result is a very unbalanced distribution which hurt performance.
+
+#### Range Partitioning
+
+Pair RDDs may contain keys that have an ordering defined e.g. Int, Char, String.
+
+For such RDDs, **range partitioning** may be more efficient.
+
+Using a range partitioner, keys are partitioned according to:
+1. An ordering for keys.
+2. A set of sorted ranges of keys.
+
+Property: Tuples with keys in the same range appear on the same machine.
+
+The example above which showed poor performance with hash partitioning, can be greatly improved with range partitioning:
+
+Some simple assumptions for this example:
+- keys non-negative
+- 800 is the biggest key in the RDD
+- set of ranges: [1, 200], [201, 400], [401, 600], [601, 800]
+
+In this case, range partitioning distributes the keys as follows amoung the partitions resulting in a better balance thus better performance:
+- partition 0: [8, 96]
+- partition 1: [240, 400]
+- partition 2: [401]
+- partition 3: [800]
+
+## Customise Partitioning
+
+There are two ways to create RDDs with specific partitioning:
+1. Call **partitionBy** on a RDD providing an explicit Partitioner.
+2. Using transformations that return RDDs with specific partitioners.
+
+Example:
+```scala
+val pairs = purchasesRdd.map(purchase => purchase.customerId -> purchase.price)
+
+val tunedPartitioner = new RangePartitioner(8, pairs)
+// Here we specify the number of partitions we have,
+// and we provide our RDD allowing Spark to sample this with the number of partitions to come up with the ranges.
+
+val partitioned = pairs.partitionBy(tunedPartitioner).persist()
+// And we persist to ask Spark not to keep repartitioning.
+```
+
+In summary, creating a RangePartitioner requires:
+1. Specifying the desired number of partitions.
+2. Providing a Pair RDD with ordered keys - This RDD is sampled to create a suitable set of sorted ranges.
+
+**The result of partitionBy should be persisted, otherwise partitioning is repeatedly applied (involving shuffling) each time the partitioned RDD is used.**
+
+Regarding partitioning data using transformations:
+By default when using **sortByKey** a RangePartitioner is automatically used.
+
+## Partitioning with map and flatMap
+
+Interestingly **map** and **flatMap** result without a partitioner. Why?
+
+Regarding **map**, given that we have a hash partitioned Pair RDD, why would it make sense for **map** to lose the partitioner in its result RDD?
+
+Because it is possible for **map** to change the **key** e.g.
+```scala
+rdd.map((k: String, v: Int) => "doh!" -> v)
+```
+
+In this case, if the **map** transformation preserved the partitioner in the result RDD, it no longer makes sense, as now the keys are all different.
+
+**But mapValues enables us to do map transformations without changing the keys, thereby preserving the partitioner.**
