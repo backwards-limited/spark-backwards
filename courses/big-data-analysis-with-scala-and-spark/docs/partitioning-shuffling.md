@@ -204,3 +204,102 @@ rdd.map((k: String, v: Int) => "doh!" -> v)
 In this case, if the **map** transformation preserved the partitioner in the result RDD, it no longer makes sense, as now the keys are all different.
 
 **But mapValues enables us to do map transformations without changing the keys, thereby preserving the partitioner.**
+
+## Partitioner Optimisation
+
+Let's optimise the **reduceByKey** example above so that it does not involve any shuffling over the network.
+
+```scala
+val pairs = purchasesRdd.map(purchase => purchase.customerId -> purchase.price)
+
+val tunedPartitioner = new RangePartitioner(8, pairs)
+
+val partitioned = pairs.partitionBy(tunedPartitioner).persist()
+
+val purchasesPerCustomer = partitioned.map(p => p._1 -> (1, p._2))
+
+val purchasesPerMonth =
+  purchasesPerCustomer
+    .reduceByKey((v1, v2) => (v1._1 + v2._1) -> (v1._2 + v2._2))
+    .collect()
+```
+
+Performance comparision of the above approaches:
+![Performance comparisons](images/performance-comparisons.png)
+
+## Example
+
+Consider an application that keeps a large table of user information in memory:
+
+- userData: BIG, containing (UserId, UserInfo) pairs, where UserInfo contains a list of topics the user is subscribed to.
+
+The application periodically combines this big table with a smaller file representing events that happened in the past 5 minutes:
+
+- events: Small, containing (UserId, LinkInfo) pairs for users who have clicked a link on a website in those 5 minutes.
+
+We may wish to count how many users visited a link that was not to one of their subscribed topics.
+We can perform this combination with Spark's **join** operation, which can be used to group the UserInfo and LinkInfo pairs for each UserId by key.
+
+Here is a possible solution, but is it a good one?
+
+```scala
+val sc = new SparkContext(...)
+
+val userData = sc.sequenceFile[UserId, UserInfo]("hdfs://...").persist()
+
+def processNewLogs(logFileName: String) = {
+  val events = sc.sequenceFile[UserId, LinkInfo](logFileName)
+
+  val joined: RDD[(UserId, (UserInfo, LinkInfo))] = userData join events
+
+  val offTopicVisits = joined filter {
+    !userInfo.topics.contains(linkInfo.topic)
+  } count()
+
+  println(s"Number of visits to non-subscribed topics: $offTopicVisits")      
+}
+```
+
+It is very inefficient. The **join** operation, called each time **processNewLogs** is invoked, does not know anything about how the keys are partitioned in the datasets.
+
+![Poor solution](images/poor-solution.png)
+
+By default, this operation will hash all the keys of both datasets, sending elements with the same key hash across the network to the same machine and then join together the elements on that machine.
+**Even though userData doesn't change.**
+
+This can be easily fixed - Just use **partitionBy** on the **big userData** RDD at the start of the program:
+```scala
+val userData =
+  sc.sequenceFile[UserId, UserInfo]("hdfs://...")
+    .partitionBy(new HashPartitioner(100)) // Create 100 partitions
+    .persist()
+```
+
+As we called **partitionBy** when building **userData**, Spark will now know that it is hash-partitioned, and calls to **join** on it will take advantage of this information.
+In particular, when we call **userData.join(events)**, Spark will shuffle only the **events** RDD, sending events with each particular UserId to the machine that contains the corresponding hash partition of userData.
+
+Now that **userData** is pre-partitioned, Spark will shuffle only the **events** RDD, sending events with each particular UserId to the machine that contains the corresponding hash partition of userData.
+
+## How Do I Know a Shuffle Will Occur?
+
+![When shuffle occurs](images/when-shuffle-occurs.png)
+
+## Operations That Might Cause a Shuffle
+
+- cogroup
+- groupWith
+- join
+- leftOuterJoin
+- rightOuterJoin
+- groupByKey
+- reduceByKey
+- combineByKey
+- distinct
+- intersection
+- repartition
+- coalesce
+
+There are a few ways to use operations that might cause a shuffle and to still avoid much or all network shuffling. Examples:
+
+1. **reduceByKey** running on a pre-partitioned RDD will cause the values to be computed **locally**, requiring only the final reduced value has to be sent from the worker to the driver.
+2. **join** called on two RDDs that are pre-partitioned with the same partitioner and cached on the same machine will cause the join to be computed **locally**, with no shuffling across the network.
