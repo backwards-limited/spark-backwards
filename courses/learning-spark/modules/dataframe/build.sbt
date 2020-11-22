@@ -1,6 +1,6 @@
-lazy val root = Project("mnmcount", file("."))
+lazy val root = Project("dataframe", file("."))
   .settings(
-    name := "mnmcount",
+    name := "dataframe",
     organization := "com.backwards",
     sbtVersion := "1.4.2",
     scalaVersion := "2.12.10",

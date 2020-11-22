@@ -11,3 +11,5 @@ Note that this module is within a multi-module project and that there is only on
 - [Installation](docs/installation.md)
 
 - [DataFrames and Datasets](docs/dataframes-datasets.md)
+
+- [Structured APIs](docs/structured-apis.md)

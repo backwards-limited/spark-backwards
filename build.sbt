@@ -4,25 +4,21 @@ import sbt._
 lazy val root = project("spark-backwards", file("."))
   .settings(description := "Backwards Spark module aggregation - Spark functionality includes example usage in various courses")
   .aggregate(bigDataAnalysisWithScalaAndSpark)
-  /*.aggregate(apacheSparkQuickStartGuide, sales)
-  .aggregate(learningSpark, mnmcount)*/
+  .aggregate(sparkByExamples)
+  .aggregate(learningSpark, mnmcount, dataframe)
 
 lazy val bigDataAnalysisWithScalaAndSpark = project("big-data-analysis-with-scala-and-spark", file("courses/big-data-analysis-with-scala-and-spark"))
 
-// Currently not aggregated and so ignored
-
-lazy val apacheSparkQuickStartGuide = project("apache-spark-quick-start-guide", file("courses/apache-spark-quick-start-guide"))
-  .settings(description := "Apache Spark Quick Start Guide Book")
-
-lazy val sales = project("sales", file("courses/apache-spark-quick-start-guide/modules/sales"))
+lazy val sparkByExamples = project("spark-by-examples", file("courses/spark-by-examples"))
 
 lazy val learningSpark = project("learning-spark", file("courses/learning-spark"))
-  .settings(description := "Learning Spark Book")
 
 lazy val mnmcount = project("mnmcount", file("courses/learning-spark/modules/mnmcount"))
 
+lazy val dataframe = project("dataframe", file("courses/learning-spark/modules/dataframe"))
+
+// TODO - Put back
 lazy val sparkAndHadoopCourse = project("spark-and-hadoop", file("courses/spark-and-hadoop"))
-  .settings(description := "Spark and Hadoop Course")
 
 def project(id: String, base: File): Project =
   Project(id, base)

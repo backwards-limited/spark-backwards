@@ -2,7 +2,13 @@ import sbt._
 
 object Dependencies {
   def apply(): Seq[sbt.ModuleID] = Seq(
-    scalatest, testcontainers, airframe, pprint, configuration, scopt, decline, betterFiles, monocle, avro4s, spark, console4Cats, log4Cats, cats
+    scalatest, testcontainers, airframe,
+    pprint, configuration, scopt, decline,
+    cats, console4Cats, log4Cats,
+    monocle,
+    betterFiles,
+    spark, hadoop,
+    avro4s
   ).flatten
 
   def overrides: Seq[ModuleID] = Seq(
@@ -88,6 +94,17 @@ object Dependencies {
       "spark-graphx",
       "spark-repl"
     ).map(group %% _ % version)
+  }
+
+  lazy val hadoop: Seq[ModuleID] = {
+    val group = "org.apache.hadoop"
+    val version = "3.3.0"
+
+    Seq(
+      "hadoop-common",
+      "hadoop-client",
+      "hadoop-aws"
+    ).map(group % _ % version)
   }
 
   lazy val log4Cats: Seq[ModuleID] = {
