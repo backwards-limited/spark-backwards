@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
   def apply(): Seq[sbt.ModuleID] = Seq(
     scalatest, testcontainers, airframe,
-    pprint, configuration, scopt, decline,
+    pprint, pureConfig, scopt, decline,
     cats, console4Cats, log4Cats,
     monocle,
     betterFiles,
@@ -14,26 +14,26 @@ object Dependencies {
   def overrides: Seq[ModuleID] = Seq(
     jackson
   ).flatten
-  
+
   lazy val scalatest: Seq[ModuleID] = Seq(
-    "org.scalatest" %% "scalatest" % "3.1.1" % "test, it"
+    "org.scalatest" %% "scalatest" % "3.2.3" % "test, it"
   )
 
   lazy val testcontainers: Seq[ModuleID] = Seq(
-    "org.testcontainers" % "testcontainers" % "1.12.5" % "test, it"
+    "org.testcontainers" % "testcontainers" % "1.15.0" % "test, it"
   )
 
   lazy val airframe: Seq[ModuleID] = Seq(
-    "org.wvlet.airframe" %% "airframe-log" % "20.2.1"
+    "org.wvlet.airframe" %% "airframe-log" % "20.11.0"
   )
 
   lazy val pprint: Seq[ModuleID] = Seq(
-    "com.lihaoyi" %% "pprint" % "0.5.9" % "test, it"
+    "com.lihaoyi" %% "pprint" % "0.6.0" % "test, it"
   )
 
-  lazy val configuration: Seq[ModuleID] = {
+  lazy val pureConfig: Seq[ModuleID] = {
     val group = "com.github.pureconfig"
-    val version = "0.12.2"
+    val version = "0.14.0"
 
     Seq(
       "pureconfig",
@@ -50,12 +50,12 @@ object Dependencies {
   )
 
   lazy val betterFiles: Seq[ModuleID] = Seq(
-    "com.github.pathikrit" %% "better-files" % "3.8.0"
+    "com.github.pathikrit" %% "better-files" % "3.9.1"
   )
   
   lazy val monocle: Seq[ModuleID] = {
     val group = "com.github.julien-truffaut"
-    val version = "2.0.2"
+    val version = "2.1.0"
 
     Seq(
       "monocle-law"
@@ -67,7 +67,7 @@ object Dependencies {
   }
 
   lazy val avro4s: Seq[ModuleID] = Seq(
-    "com.sksamuel.avro4s" %% "avro4s-core" % "2.0.2"
+    "com.sksamuel.avro4s" %% "avro4s-core" % "4.0.2"
   )
 
   lazy val jackson: Seq[ModuleID] = {
