@@ -10,6 +10,11 @@ import org.scalatest.matchers.must.Matchers
 import org.apache.spark.sql.functions._
 
 class DataFrameReaderSpec extends AnyFreeSpec with Matchers {
+  val spark: SparkSession =
+    SparkSession.builder.appName("dataframe").config("spark.master", "local").getOrCreate
+
+  import spark.implicits._
+
   "DataFrameReader" - {
     val fileSchema =
       StructType(
@@ -44,11 +49,6 @@ class DataFrameReaderSpec extends AnyFreeSpec with Matchers {
           StructField("Delay", FloatType, nullable = true)
         )
       )
-
-    val spark: SparkSession =
-      SparkSession.builder.appName("dataframe").config("spark.master", "local").getOrCreate
-
-    import spark.implicits._
 
     // Read the file using the CSV DataFrameReader
     val path = Resource.getUrl("sf-fire-calls.csv").getFile
@@ -104,5 +104,19 @@ class DataFrameReaderSpec extends AnyFreeSpec with Matchers {
       .distinct
       .orderBy(year($"IncidentDate"))
       .show
+
+    // Aggregations - What were the most common types of fire calls?
+    df
+      .select("CallType")
+      .where(col("CallType").isNotNull)
+      .groupBy("CallType")
+      .count()
+      .orderBy(desc("count"))
+      .show(10, truncate = false)
+
+    // sum, avg, min, max
+    df
+      .select(sum("NumAlarms"), avg("Delay"), min("Delay"), max("Delay"))
+      .show()
   }
 }

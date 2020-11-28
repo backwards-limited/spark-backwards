@@ -5,10 +5,10 @@ object Dependencies {
     scalatest, testcontainers, airframe,
     pprint, pureConfig, scopt, decline,
     cats, console4Cats, log4Cats,
-    monocle,
+    monocle, chimney,
+    circe, avro4s,
     betterFiles,
-    spark, hadoop,
-    avro4s
+    spark, hadoop
   ).flatten
 
   def overrides: Seq[ModuleID] = Seq(
@@ -49,10 +49,30 @@ object Dependencies {
     "com.monovore" %% "decline" % "1.3.0"
   )
 
-  lazy val betterFiles: Seq[ModuleID] = Seq(
-    "com.github.pathikrit" %% "better-files" % "3.9.1"
+  lazy val cats: Seq[ModuleID] = {
+    val group = "org.typelevel"
+    val version = "2.2.0"
+
+    Seq(
+      "cats-core", "cats-effect"
+    ).map(group %% _ % version) ++ Seq(
+      "cats-laws", "cats-testkit"
+    ).map(group %% _ % version % "test, it")
+  }
+
+  lazy val console4Cats: Seq[ModuleID] = Seq(
+    "dev.profunktor" %% "console4cats" % "0.8.1"
   )
-  
+
+  lazy val log4Cats: Seq[ModuleID] = {
+    val group = "io.chrisdavenport"
+    val version = "1.1.1"
+
+    Seq(
+      "log4cats-core", "log4cats-slf4j"
+    ).map(group %% _ % version)
+  }
+
   lazy val monocle: Seq[ModuleID] = {
     val group = "com.github.julien-truffaut"
     val version = "2.1.0"
@@ -66,8 +86,27 @@ object Dependencies {
     ).map(group %% _ % version)
   }
 
+  lazy val chimney: Seq[ModuleID] = Seq(
+    "io.scalaland" %% "chimney" % "0.6.1"
+  )
+
+  lazy val circe: Seq[ModuleID] = {
+    val group = "io.circe"
+    val version = "0.13.0"
+
+    Seq(
+      "circe-core", "circe-generic", "circe-generic-extras", "circe-parser", "circe-refined", "circe-optics", "circe-literal", "circe-jawn"
+    ).map(group %% _ % version) ++ Seq(
+      "circe-testing"
+    ).map(group %% _ % version % "test, it")
+  }
+
   lazy val avro4s: Seq[ModuleID] = Seq(
     "com.sksamuel.avro4s" %% "avro4s-core" % "4.0.2"
+  )
+
+  lazy val betterFiles: Seq[ModuleID] = Seq(
+    "com.github.pathikrit" %% "better-files" % "3.9.1"
   )
 
   lazy val jackson: Seq[ModuleID] = {
@@ -106,30 +145,6 @@ object Dependencies {
       "hadoop-aws"
     ).map(group % _ % version)
   }
-
-  lazy val log4Cats: Seq[ModuleID] = {
-    val group = "io.chrisdavenport"
-    val version = "1.1.1"
-
-    Seq(
-      "log4cats-core", "log4cats-slf4j"
-    ).map(group %% _ % version)
-  }
-
-  lazy val cats: Seq[ModuleID] = {
-    val group = "org.typelevel"
-    val version = "2.2.0"
-
-    Seq(
-      "cats-core", "cats-effect"
-    ).map(group %% _ % version) ++ Seq(
-      "cats-laws", "cats-testkit"
-    ).map(group %% _ % version % "test, it")
-  }
-
-  lazy val console4Cats: Seq[ModuleID] = Seq(
-    "dev.profunktor" %% "console4cats" % "0.8.1"
-  )
 }
 
 /*
