@@ -51,7 +51,7 @@ class DataFrameReaderSpec extends AnyFreeSpec with Matchers {
       )
 
     // Read the file using the CSV DataFrameReader
-    val path = Resource.getUrl("sf-fire-calls.csv").getFile
+    val path: String = Resource.getUrl("sf-fire-calls.csv").getFile
 
     val df = spark.read
       .schema(fileSchema)
