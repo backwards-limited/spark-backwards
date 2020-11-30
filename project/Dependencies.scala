@@ -8,7 +8,7 @@ object Dependencies {
     monocle, chimney,
     circe, avro4s,
     betterFiles,
-    spark, hadoop
+    spark, hadoop, postgresql
   ).flatten
 
   def overrides: Seq[ModuleID] = Seq(
@@ -145,6 +145,10 @@ object Dependencies {
       "hadoop-aws"
     ).map(group % _ % version)
   }
+
+  lazy val postgresql: Seq[ModuleID] = Seq(
+    "org.postgresql" % "postgresql" % "42.2.18"
+  )
 }
 
 /*

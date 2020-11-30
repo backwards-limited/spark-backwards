@@ -6,7 +6,8 @@ lazy val root = project("spark-backwards", file("."))
   .aggregate(bigDataAnalysisWithScalaAndSpark)
   .aggregate(sparkByExamples)
   .aggregate(learningSpark, mnmcount, dataframe)
-  .dependsOn(learningSpark)
+  .aggregate(masterSpark)
+  .dependsOn(learningSpark, masterSpark)
 
 lazy val bigDataAnalysisWithScalaAndSpark = project("big-data-analysis-with-scala-and-spark", file("courses/big-data-analysis-with-scala-and-spark"))
 
@@ -17,6 +18,8 @@ lazy val learningSpark = project("learning-spark", file("courses/learning-spark"
 lazy val mnmcount = project("mnmcount", file("courses/learning-spark/modules/mnmcount"))
 
 lazy val dataframe = project("dataframe", file("courses/learning-spark/modules/dataframe"))
+
+lazy val masterSpark = project("master-spark", file("courses/master-spark"))
 
 // TODO - Put back
 lazy val sparkAndHadoopCourse = project("spark-and-hadoop", file("courses/spark-and-hadoop"))
