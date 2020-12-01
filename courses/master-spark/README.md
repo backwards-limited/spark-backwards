@@ -7,4 +7,5 @@ Note that this module is within a multi-module project and that there is only on
 ## Table of Contents
 
 - [Introduction](docs/introduction.md)
+- [Architecture Introduction](docs/architecture-introduction.md)
 - [Dataset](docs/dataset.md)

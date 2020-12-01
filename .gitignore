@@ -103,13 +103,5 @@ out
 output
 events
 
-/courses/master-spark/course/sparkwithjava/.recommenders/
-/courses/master-spark/course/sparkwithjava/project1/.settings/
-/courses/master-spark/course/sparkwithjava/project2/.settings/
-/courses/master-spark/course/sparkwithjava/project3/.settings/
-/courses/master-spark/course/sparkwithjava/project4/.settings/
-/courses/master-spark/course/sparkwithjava/project5/.settings/
-/courses/master-spark/course/sparkwithjava/project6/.settings/
-/courses/master-spark/course/sparkwithjava/project7/.settings/
-/courses/master-spark/course/sparkwithjava/project8/.settings/
-/courses/master-spark/course/sparkwithjava/project9/.settings/
+**/.recommenders
+**/.settings

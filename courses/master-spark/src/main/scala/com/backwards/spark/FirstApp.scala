@@ -9,12 +9,12 @@ import org.apache.spark.sql.{Dataset, Row, SaveMode, SparkSession}
 import com.backwards.spark.MapOps._
 import com.backwards.spark.Spark._
 
-object FirstApplication {
+object FirstApp {
   def main(args: Array[String]): Unit =
     program.unsafeRunSync()
 
   def program: IO[Unit] =
-    sparkSession(_.appName("first-application").master("local")).use { implicit sparkSession =>
+    sparkSession(_.appName("first-app").master("local")).use { implicit sparkSession =>
       loadResource(resourceUrl("name-and-comments.txt")) >>= commentsHaveNumber >>= withFullName >>= orderByLastName >>= show >>= persist
     }
 
