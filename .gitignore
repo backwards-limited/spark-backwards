@@ -103,5 +103,5 @@ out
 output
 events
 
-**/.recommenders
-**/.settings
+.*
+!.gitignore
