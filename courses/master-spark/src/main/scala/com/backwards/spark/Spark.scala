@@ -9,7 +9,7 @@ object Spark {
       IO(f(SparkSession.builder()).getOrCreate())
 
     val release: SparkSession => IO[Unit] =
-      spark => IO(spark.close())
+      spark => IO(println("Closing Spark Session")).as(spark.close())
 
     Resource.make(acquire)(release)
   }

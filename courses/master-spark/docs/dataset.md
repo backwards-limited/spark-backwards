@@ -6,6 +6,25 @@ Take a look at [FirstApp](../src/main/scala/com/backwards/spark/FirstApp.scala) 
 
 ![Local program](images/local-program.png)
 
-## Ingesting CSV
+## Ingesting Two Different Datasets
 
-## Ingesting JSON
+![Union](images/union.png)
+
+## Dataset vs DataFrame
+
+```scala
+type DataFrame = Dataset[Row]
+```
+
+| Terminology | Code         | Tungsten memory optimise | Type safety |
+| ----------- | ------------ | ------------------------ | ----------- |
+| Dataset     | Dataset[Car] | ❌                       | ✅          |
+| Dataframe   | Dataset[Row] | ✅                       | ❌          |
+
+## Map and Reduce
+
+![Map](images/map.png)
+
+---
+
+![Reduce](images/reduce.png)

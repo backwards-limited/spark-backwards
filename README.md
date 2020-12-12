@@ -10,6 +10,8 @@ Example usage included while covering various courses.
 
 - [Setup](docs/setup.md)
 
+- [SBT](docs/sbt.md)
+
 - [Introduction](docs/introduction.md)
 
 - [Hadoop](docs/hadoop.md)

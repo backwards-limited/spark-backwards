@@ -7,7 +7,8 @@ lazy val root = project("spark-backwards", file("."))
   .aggregate(sparkByExamples)
   .aggregate(learningSpark, mnmcount, dataframe)
   .aggregate(masterSpark)
-  .dependsOn(learningSpark, masterSpark)
+  .aggregate(bigDataWithSparkEmr)
+  .dependsOn(learningSpark, masterSpark, bigDataWithSparkEmr)
 
 lazy val bigDataAnalysisWithScalaAndSpark = project("big-data-analysis-with-scala-and-spark", file("courses/big-data-analysis-with-scala-and-spark"))
 
@@ -21,6 +22,8 @@ lazy val dataframe = project("dataframe", file("courses/learning-spark/modules/d
 
 lazy val masterSpark = project("master-spark", file("courses/master-spark"))
 
+lazy val bigDataWithSparkEmr = project("big-data-with-spark-emr", file("courses/big-data-with-spark-emr"))
+
 // TODO - Put back
 lazy val sparkAndHadoopCourse = project("spark-and-hadoop", file("courses/spark-and-hadoop"))
 
@@ -32,10 +35,7 @@ def project(id: String, base: File): Project =
     .settings(testFrameworks in IntegrationTest := Seq(TestFrameworks.ScalaTest))
     .settings(
       resolvers ++= Seq(
-        Resolver.sonatypeRepo("releases"),
-        Resolver.bintrayRepo("cakesolutions", "maven"),
-        "jitpack" at "https://jitpack.io",
-        "Confluent Platform Maven" at "http://packages.confluent.io/maven/"
+        "jitpack" at "https://jitpack.io"
       ),
       scalaVersion := BuildProperties("scala.version"),
       sbtVersion := BuildProperties("sbt.version"),
@@ -53,18 +53,34 @@ def project(id: String, base: File): Project =
       assemblyJarName in assembly := s"$id.jar",
       test in assembly := {},
       assemblyMergeStrategy in assembly := {
-        case PathList("javax", xs @ _*) => MergeStrategy.first
-        case PathList("org", xs @ _*) => MergeStrategy.first
-        case PathList(ps @ _*) if ps.last endsWith ".html" => MergeStrategy.first
-        case PathList(ps @ _*) if ps.last endsWith "module-info.class" => MergeStrategy.first
-        case "application.conf" => MergeStrategy.concat
-        case "codegen/config.fmpp" => MergeStrategy.concat
-        case "git.properties" => MergeStrategy.concat
-        case "parquet.thrift" => MergeStrategy.concat
-        case "plugin.xml" => MergeStrategy.concat
-        case x =>
-          val oldStrategy = (assemblyMergeStrategy in assembly).value
-          oldStrategy(x)
+        case x if Assembly.isConfigFile(x) =>
+          MergeStrategy.concat
+
+        case PathList(ps @ _*) if Assembly.isReadme(ps.last) || Assembly.isLicenseFile(ps.last) =>
+          MergeStrategy.rename
+
+        case PathList("META-INF", xs @ _*) =>
+          xs map {_.toLowerCase} match {
+            case "manifest.mf" :: Nil | "index.list" :: Nil | "dependencies" :: Nil =>
+              MergeStrategy.discard
+
+            case ps @ x :: xs if ps.last.endsWith(".sf") || ps.last.endsWith(".dsa") =>
+              MergeStrategy.discard
+
+            case "plexus" :: _ =>
+              MergeStrategy.discard
+
+            case "services" :: _ =>
+              MergeStrategy.filterDistinctLines
+
+            case "spring.schemas" :: Nil | "spring.handlers" :: Nil =>
+              MergeStrategy.filterDistinctLines
+
+            case _ => MergeStrategy.first
+          }
+
+        case _ =>
+          MergeStrategy.first
       }
     )
     .settings(
