@@ -19,7 +19,7 @@ object _4a {
         load(resourceUrl("houses.csv"))
           .map(_.tap(_.printSchema()).pipe(_.show()))
 
-      program.run(spark)
+      program run spark
     }
 
   def load(url: URL): Kleisli[IO, SparkSession, Dataset[House]] =

@@ -1,7 +1,6 @@
 package com.backwards.spark
 
 import java.net.URL
-import scala.util.chaining._
 import better.files.Resource.{getUrl => resourceUrl}
 import cats.data.Kleisli
 import cats.effect.IO
@@ -35,7 +34,7 @@ object _5 {
             .show()
       }
 
-      program.run(spark)
+      program run spark
     }
 
   def load(url: URL): Kleisli[IO, SparkSession, Dataset[Row]] =

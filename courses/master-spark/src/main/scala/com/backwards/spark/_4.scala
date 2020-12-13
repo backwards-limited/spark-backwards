@@ -24,7 +24,7 @@ object _4 {
           } yield ()
         }
 
-      program.run(spark)
+      program run spark
     }
 
   def counting(ds: Dataset[String]): Kleisli[IO, SparkSession, Unit] =
