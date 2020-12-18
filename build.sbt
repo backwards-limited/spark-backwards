@@ -1,31 +1,41 @@
 import BuildProperties._
 import sbt._
 
-lazy val root = project("spark-backwards", file("."))
-  .settings(description := "Backwards Spark module aggregation - Spark functionality includes example usage in various courses")
-  .aggregate(bigDataAnalysisWithScalaAndSpark)
-  .aggregate(sparkByExamples)
-  .aggregate(learningSpark, mnmcount, dataframe)
-  .aggregate(masterSpark)
-  .aggregate(bigDataWithSparkEmr)
-  .dependsOn(learningSpark, masterSpark, bigDataWithSparkEmr)
+lazy val root =
+  project("spark-backwards", file("."))
+    .settings(description := "Backwards Spark module aggregation - Spark functionality includes example usage in various courses")
+    .aggregate(bigDataAnalysisWithScalaAndSpark)
+    .aggregate(sparkByExamples)
+    .aggregate(learningSpark, mnmcount, dataframe)
+    .aggregate(masterSpark)
+    .aggregate(bigDataWithSparkEmr)
+    .dependsOn(learningSpark, masterSpark, bigDataWithSparkEmr)
 
-lazy val bigDataAnalysisWithScalaAndSpark = project("big-data-analysis-with-scala-and-spark", file("courses/big-data-analysis-with-scala-and-spark"))
+lazy val bigDataAnalysisWithScalaAndSpark =
+  project("big-data-analysis-with-scala-and-spark", file("courses/big-data-analysis-with-scala-and-spark"))
 
-lazy val sparkByExamples = project("spark-by-examples", file("courses/spark-by-examples"))
+lazy val sparkByExamples =
+  project("spark-by-examples", file("courses/spark-by-examples"))
 
-lazy val learningSpark = project("learning-spark", file("courses/learning-spark"))
+lazy val learningSpark =
+  project("learning-spark", file("courses/learning-spark"))
 
-lazy val mnmcount = project("mnmcount", file("courses/learning-spark/modules/mnmcount"))
+lazy val mnmcount =
+  project("mnmcount", file("courses/learning-spark/modules/mnmcount"))
 
-lazy val dataframe = project("dataframe", file("courses/learning-spark/modules/dataframe"))
+lazy val dataframe =
+  project("dataframe", file("courses/learning-spark/modules/dataframe"))
 
-lazy val masterSpark = project("master-spark", file("courses/master-spark"))
+lazy val masterSpark =
+  project("master-spark", file("courses/master-spark"))
+    .settings(mainClass in assembly := Some("com.backwards.spark._6"))
 
-lazy val bigDataWithSparkEmr = project("big-data-with-spark-emr", file("courses/big-data-with-spark-emr"))
+lazy val bigDataWithSparkEmr =
+  project("big-data-with-spark-emr", file("courses/big-data-with-spark-emr"))
 
 // TODO - Put back
-lazy val sparkAndHadoopCourse = project("spark-and-hadoop", file("courses/spark-and-hadoop"))
+lazy val sparkAndHadoopCourse =
+  project("spark-and-hadoop", file("courses/spark-and-hadoop"))
 
 def project(id: String, base: File): Project =
   Project(id, base)
@@ -50,6 +60,8 @@ def project(id: String, base: File): Project =
       fork := true,
       javaOptions in IntegrationTest ++= environment.map { case (key, value) => s"-D$key=$value" }.toSeq,
       scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),
+      run in Compile := Defaults.runTask(fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run)).evaluated,
+      runMain in Compile := Defaults.runMainTask(fullClasspath in Compile, runner in (Compile, run)).evaluated,
       assemblyJarName in assembly := s"$id.jar",
       test in assembly := {},
       assemblyMergeStrategy in assembly := {

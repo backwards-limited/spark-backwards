@@ -14,7 +14,7 @@ object _5a {
     program.unsafeRunSync()
 
   def program: IO[Unit] =
-    sparkSession(_.appName("4a").master("local")).use { spark =>
+    sparkSession(_.appName("5a").master("local")).use { spark =>
       val program: Kleisli[IO, SparkSession, Unit] = {
         for {
           customers <- load(resourceUrl("customers.csv"))

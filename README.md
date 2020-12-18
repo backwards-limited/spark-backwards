@@ -4,8 +4,6 @@ Scala module with reusable Spark functionality.
 
 Example usage included while covering various courses.
 
-**WARNING** until Spark 3.0.0 is release, only Java 8 can be used.
-
 ## Table of Contents
 
 - [Setup](docs/setup.md)
@@ -33,3 +31,8 @@ Example usage included while covering various courses.
   - [Learning Spark](courses/learning-spark/README.md)
   
   - [Spark and Hadoop](courses/spark-and-hadoop/README.md)
+  
+NOTE on Intellij - The build has Spark dependencies set to **provided**. This is fine when running from the **sbt** console as the build is configured to handle this.
+However, for every **main** application run in Intellij, we have to add the following configuration to include any **provided** dependencies:
+
+![Provided](docs/images/provided-dependencies.png)

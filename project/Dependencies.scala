@@ -132,7 +132,7 @@ object Dependencies {
       "spark-hive",
       "spark-graphx",
       "spark-repl"
-    ).map(group %% _ % version)
+    ).map(group %% _ % version % Provided)
   }
 
   lazy val hadoop: Seq[ModuleID] = {
@@ -143,7 +143,7 @@ object Dependencies {
       "hadoop-common",
       "hadoop-client",
       "hadoop-aws"
-    ).map(group % _ % version)
+    ).map(group % _ % version % Provided)
   }
 
   lazy val postgresql: Seq[ModuleID] = Seq(
