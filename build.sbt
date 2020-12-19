@@ -9,7 +9,8 @@ lazy val root =
     .aggregate(learningSpark, mnmcount, dataframe)
     .aggregate(masterSpark)
     .aggregate(bigDataWithSparkEmr)
-    .dependsOn(learningSpark, masterSpark, bigDataWithSparkEmr)
+    .aggregate(bigDataHadoopSpark)
+    .dependsOn(learningSpark, masterSpark, bigDataWithSparkEmr, bigDataHadoopSpark)
 
 lazy val bigDataAnalysisWithScalaAndSpark =
   project("big-data-analysis-with-scala-and-spark", file("courses/big-data-analysis-with-scala-and-spark"))
@@ -32,6 +33,9 @@ lazy val masterSpark =
 
 lazy val bigDataWithSparkEmr =
   project("big-data-with-spark-emr", file("courses/big-data-with-spark-emr"))
+
+lazy val bigDataHadoopSpark =
+  project("big-data-hadoop-spark", file("courses/big-data-hadoop-spark"))
 
 // TODO - Put back
 lazy val sparkAndHadoopCourse =

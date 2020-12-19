@@ -1,0 +1,10 @@
+# Big Data Hadoop Spark
+
+Using Backwards Spark functionality and following [Big Data Hadoop Spark course](https://www.udemy.com/course/big-data-hadoop-spark-project).
+
+Note that this module is within a multi-module project and that there is only one top level build (build.sbt).
+
+## Table of Contents
+
+- [Introduction](docs/introduction.md)
+- [Hadoop](docs/hadoop.md)
