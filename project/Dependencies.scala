@@ -128,6 +128,7 @@ object Dependencies {
       "spark-core",
       "spark-sql",
       "spark-streaming",
+      "spark-sql-kafka-0-10",
       "spark-mllib",
       "spark-hive",
       "spark-graphx",
