@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-spark = SparkSession.builder.master("local[*]").getOrCreate()
+spark = SparkSession.builder.appName("spark-demo").getOrCreate()
 
 """# DataFrame
 
