@@ -21,6 +21,10 @@ Bank marketing prospects data:
 Transformation using PySpark:
 - Replace missing values with average values
 - Delete records with **unknown** values
-- After transformation, store data in a Hive table
 
 There is a Python notebook to run in Google Colab.
+
+There is also a second version - a Python script that can be submitted to Spark as:
+```bash
+spark-submit pyspark-bank-marketing-project.py
+```
