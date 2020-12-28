@@ -13,3 +13,6 @@ Note that this module is within a multi-module project and that there is only on
 - [Pyspark](docs/pyspark.md)
 - [Hadoop Commands](docs/hadoop-commands.md)
 - [Demo - Bank](docs/demo-bank.md)
+- [Scala](docs/scala.md)
+- [AWS with Glue & Athena](docs/aws-glue-athena.md)
+- [Advanced Datasets](docs/advanced-datasets.md)

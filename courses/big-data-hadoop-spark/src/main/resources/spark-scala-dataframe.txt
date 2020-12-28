@@ -1,0 +1,112 @@
+wget https://raw.githubusercontent.com/futurexskill/bigdata/master/retailstore.csv
+
+hadoop fs -mkdir /user/futurexskill
+
+hadoop fs -mkdir /user/futurexskill/data
+
+hadoop fs -put retailstore.csv /user/futurexskill/data
+
+
+$ spark-shell
+
+============================== spark-shell basic=========================================
+
+val customerDF = spark.read.csv("data/retailstore.csv")
+
+customerDF.show()
+
+val customerDF = spark.read.option("header", "true").csv("data/retailstore.csv")
+
+or
+
+val customerDF = spark.read.option("header", "true").csv("/user/futurexskill/data/retailstore.csv")
+
+customerDF.show()
+
+customerDF.head()
+
+customerDF.groupBy("Gender").count()
+
+customerDF.groupBy("Gender").count().show()
+
+customerDF.describe().show()
+
+customerDF.select("Country").show()
+
+customerDF.groupBy("Country").count().show()
+
+customerDF.groupBy("Gender").count().show()
+
+"""# Running SQL Queries Programmatically
+
+## Create a temporary table
+"""
+
+customerDF.createOrReplaceTempView("customer")
+
+"""## Fetch all records from the table using a SQL query"""
+
+val results = spark.sql("select * from customer")
+
+results.show()
+
+val results2 = spark.sql("select * from customer where age>22")
+
+results2.show()
+
+customerDF.select("age","salary").show()
+
+customerDF.filter("Salary > 30000").select("Age").show()
+
+customerDF.filter("Salary > 30000").select("age","Country").show()
+
+customerDF.filter("Salary > 30000").select("age","Country").count()
+
+customerDF.printSchema()
+
+val customerDF2 = spark.read.option("header", "true").option("inferSchema","true").csv("data/retailstore.csv")
+
+customerDF2.printSchema()
+
+customerDF2.groupBy("gender").max().show()
+customerDF2.groupBy("country").min().show()
+customerDF2.groupBy("age").mean().show()
+
+customerDF2.select(countDistinct("country")).show()
+customerDF2.select(avg("salary")).show()
+customerDF2.select(countDistinct("country").alias("Distinct Countries")).show()
+customerDF2.select(avg("age")).show()
+customerDF2.select(stddev("salary")).show()
+customerDF2.orderBy("salary").show()
+
+customerDF2.show()
+
+"""## drop any row that contains null data"""
+
+customerDF2.na.drop().show()
+
+"""## Replace missing values"""
+
+## Pass the same data type
+customerDF2.na.fill(0).show()
+
+
+"""## Replace missing values"""
+
+
+
+
+# Optional in spark-shell
+import spark.implicits._
+
+customerDF.select($"Country").show()
+
+
+customerDF.filter($"Salary" > 30000).select("Age").show()
+
+
+
+
+
+
+

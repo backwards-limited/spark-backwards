@@ -1,0 +1,51 @@
+wget https://raw.githubusercontent.com/futurexskill/bigdata/master/bank_prospects.csv
+
+hadoop fs -mkdir /user/futurexskill
+
+hadoop fs -mkdir /user/futurexskill/data
+
+hadoop fs -put bank_prospects.csv /user/futurexskill/data
+
+
+$ spark-shell
+
+val bankProspectsDF = spark.read.option("header", "true").option("inferSchema","true").csv("data/bank_prospects.csv")
+
+bankProspectsDF.show()
+
+val bankProspectsDF1 = bankProspectsDF.filter($"Country" !== "unknown")
+
+bankProspectsDF1.show()
+
+
+val meanAgeArray = bankProspectsDF1.select(avg($"age")).collect()
+
+val meanAge : Double = meanAgeArray(0)(0).toString.toDouble
+
+
+val meanSalaryArray = bankProspectsDF1.select(avg("salary")).collect()
+
+val meanSalary= meanSalaryArray(0)(0)
+
+val meanSalary : Double = meanSalaryArray(0)(0).toString.toDouble
+
+val bankProspectsDF2 = bankProspectsDF1.na.fill(meanAge,Array("Age"))
+
+bankProspectsDF2.show()
+
+"""### Replace missing age with salary value"""
+
+val bankProspectsDF3 = bankProspectsDF2.na.fill(meanSalary,Array("Salary"))
+
+bankProspectsDF3.show()
+
+"""## Write the transformed file to a new csv file"""
+
+bankProspectsDF3.write.format("csv").save("bank_prospects_transformed")
+
+
+hadoop fs -ls bank_prospects_transformed/
+
+
+hadoop fs -cat bank_prospects_transformed/part-00000-bad45ac7-a7ca-458a-9bc5-c131e375fba4-c000.csv
+
