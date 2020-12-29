@@ -4,7 +4,7 @@ object Dependencies {
   def apply(): Seq[sbt.ModuleID] = Seq(
     scalatest, testcontainers, airframe,
     pprint, pureConfig, scopt, decline,
-    cats, console4Cats, log4Cats,
+    cats, catsEffectTesting, console4Cats, log4Cats,
     monocle, chimney,
     circe, avro4s,
     betterFiles,
@@ -60,6 +60,10 @@ object Dependencies {
     ).map(group %% _ % version % "test, it")
   }
 
+  lazy val catsEffectTesting: Seq[ModuleID] = Seq(
+    "com.codecommit" %% "cats-effect-testing-scalatest" % "0.5.0" % "test, it"
+  )
+
   lazy val console4Cats: Seq[ModuleID] = Seq(
     "dev.profunktor" %% "console4cats" % "0.8.1"
   )
@@ -78,12 +82,10 @@ object Dependencies {
     val version = "2.1.0"
 
     Seq(
+      "monocle-core", "monocle-macro", "monocle-generic"
+    ).map(group %% _ % version) ++ Seq(
       "monocle-law"
-    ).map(group %% _ % version % "test, it") ++ Seq(
-      "monocle-core",
-      "monocle-macro",
-      "monocle-generic"
-    ).map(group %% _ % version)
+    ).map(group %% _ % version % "test, it")
   }
 
   lazy val chimney: Seq[ModuleID] = Seq(
