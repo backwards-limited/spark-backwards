@@ -32,6 +32,7 @@ object HiveAndPostgesqlExample {
           courses <- replaceNulls(coursesWithNulls)
           _ = courses.show()
           _ <- persist(courses)
+          _ <- writeHiveTable(courses)
         } yield ()
 
       program run spark
@@ -85,4 +86,13 @@ object HiveAndPostgesqlExample {
         .option("password", "banana")
         .save()
     )
+
+  def writeHiveTable: Dataset[Row] => Kleisli[IO, SparkSession, Unit] = {
+    val coursesTransformedTempView = "coursesTransformedTempView"
+
+    ds => Kleisli(spark =>
+      IO(ds.createOrReplaceTempView(coursesTransformedTempView)) *>
+      IO(spark.sql(s"create table coursesdb.coursesTransformed as select * from $coursesTransformedTempView"))
+    )
+  }
 }
