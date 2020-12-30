@@ -4,13 +4,17 @@ import sbt._
 lazy val root =
   project("spark-backwards", file("."))
     .settings(description := "Backwards Spark module aggregation - Spark functionality includes example usage in various courses")
+    .aggregate(spark)
     .aggregate(bigDataAnalysisWithScalaAndSpark)
     .aggregate(sparkByExamples)
     .aggregate(learningSpark, mnmcount, dataframe)
     .aggregate(masterSpark)
     .aggregate(bigDataWithSparkEmr)
     .aggregate(bigDataHadoopSpark)
-    .dependsOn(learningSpark, masterSpark, bigDataWithSparkEmr, bigDataHadoopSpark)
+    .dependsOn(spark, learningSpark, masterSpark, bigDataWithSparkEmr, bigDataHadoopSpark)
+
+lazy val spark =
+  project("spark", file("spark"))
 
 lazy val bigDataAnalysisWithScalaAndSpark =
   project("big-data-analysis-with-scala-and-spark", file("courses/big-data-analysis-with-scala-and-spark"))
@@ -29,7 +33,6 @@ lazy val dataframe =
 
 lazy val masterSpark =
   project("master-spark", file("courses/master-spark"))
-    .settings(mainClass in assembly := Some("com.backwards.spark._6"))
 
 lazy val bigDataWithSparkEmr =
   project("big-data-with-spark-emr", file("courses/big-data-with-spark-emr"))
@@ -68,6 +71,7 @@ def project(id: String, base: File): Project =
       runMain in Compile := Defaults.runMainTask(fullClasspath in Compile, runner in (Compile, run)).evaluated,
       assemblyJarName in assembly := s"$id.jar",
       test in assembly := {},
+      mainClass in assembly := Some(System.getProperty("mainClass")),
       assemblyMergeStrategy in assembly := {
         case x if Assembly.isConfigFile(x) =>
           MergeStrategy.concat

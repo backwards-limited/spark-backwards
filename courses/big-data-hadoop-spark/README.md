@@ -16,3 +16,4 @@ Note that this module is within a multi-module project and that there is only on
 - [Scala](docs/scala.md)
 - [AWS with Glue & Athena](docs/aws-glue-athena.md)
 - [Advanced Datasets](docs/advanced-datasets.md)
+- [Cloudera](docs/cloudera.md)

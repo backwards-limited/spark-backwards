@@ -24,7 +24,10 @@ class HiveAndPostgesqlExampleSpec extends AsyncWordSpec with AsyncIOSpec with Ma
       }
 
       result asserting { ds =>
-        ds.collect() mustEqual Array(Row.fromTuple(scalaCourse), Row.fromTuple(haskellCourse.lens(_._3).set("Unknown")))
+        ds.collect() mustEqual Array(
+          Row.fromTuple(scalaCourse),
+          Row.fromTuple(haskellCourse.lens(_._3).set("Unknown"))
+        )
       }
     }
   }

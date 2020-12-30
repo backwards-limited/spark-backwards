@@ -5,7 +5,7 @@ object Dependencies {
     scalatest, testcontainers, airframe,
     pprint, pureConfig, scopt, decline,
     cats, catsEffectTesting, console4Cats, log4Cats,
-    monocle, chimney,
+    monocle, shapeless, chimney,
     circe, avro4s,
     betterFiles,
     spark, hadoop, postgresql
@@ -87,6 +87,10 @@ object Dependencies {
       "monocle-law"
     ).map(group %% _ % version % "test, it")
   }
+
+  lazy val shapeless: Seq[ModuleID] = Seq(
+    "com.chuusai" %% "shapeless" % "2.3.3"
+  )
 
   lazy val chimney: Seq[ModuleID] = Seq(
     "io.scalaland" %% "chimney" % "0.6.1"

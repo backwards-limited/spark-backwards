@@ -13,11 +13,6 @@ import com.backwards.spark.Spark._
  * {{{
  *  sbt '; project master-spark; set javaOptions ++= Seq("-Dmaster=local", "-Dfile=/Users/davidainslie/workspace/backwards/spark-backwards/courses/master-spark/src/main/resources/reddit-2007-small.json"); run'
  * }}}
- *
- * To submit to a (cloud) cluster we need to build JAR (fully assembled):
- * {{{
- *  sbt -J-Xms2048m -J-Xmx2048m master-spark/assembly
- * }}}
  */
 object _6 {
   val master: SparkSession.Builder => SparkSession.Builder =
