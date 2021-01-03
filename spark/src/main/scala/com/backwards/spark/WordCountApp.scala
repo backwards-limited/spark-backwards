@@ -5,9 +5,9 @@ import scopt.OptionParser
 import org.apache.spark.sql.{Dataset, KeyValueGroupedDataset, SaveMode, SparkSession}
 
 /**
-  * sbt "runMain com.backwards.spark.WordCount --input ./data/input/sample.txt --output ./data/output"
+  * sbt "runMain com.backwards.spark.WordCountApp --input ./data/input/sample.txt --output ./data/output"
   */
-object WordCount {
+object WordCountApp {
   def main(args: Array[String]): Unit = {
     new OptionParser[Config](s"${getClass.getPackage.getName}.${getClass.getSimpleName}") {
       head("scopt", "4.x")

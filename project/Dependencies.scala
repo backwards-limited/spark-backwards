@@ -8,7 +8,7 @@ object Dependencies {
     monocle, shapeless, chimney,
     circe, avro4s,
     betterFiles,
-    spark, hadoop, postgresql
+    spark, hadoop, postgresql, awsJava
   ).flatten
 
   def overrides: Seq[ModuleID] = Seq(
@@ -19,10 +19,16 @@ object Dependencies {
     "org.scalatest" %% "scalatest" % "3.2.3" % "test, it"
   )
 
-  lazy val testcontainers: Seq[ModuleID] = Seq(
-    "org.testcontainers" % "testcontainers" % "1.15.0" % "test, it"
-  )
+  lazy val testcontainers: Seq[ModuleID] = {
+    val group = "com.dimafeng"
+    val version = "0.38.8"
 
+    Seq(
+      "testcontainers-scala-scalatest", "testcontainers-scala-kafka", "testcontainers-scala-cassandra", "testcontainers-scala-postgresql", "testcontainers-scala-localstack"
+    ).map(group %% _ % version % "test, it")
+  }
+
+  // TODO - Get rid of
   lazy val airframe: Seq[ModuleID] = Seq(
     "org.wvlet.airframe" %% "airframe-log" % "20.11.0"
   )
@@ -139,7 +145,7 @@ object Dependencies {
       "spark-hive",
       "spark-graphx",
       "spark-repl"
-    ).map(group %% _ % version % Provided)
+    ).map(group %% _ % version % "provided, test, it")
   }
 
   lazy val hadoop: Seq[ModuleID] = {
@@ -150,11 +156,15 @@ object Dependencies {
       "hadoop-common",
       "hadoop-client",
       "hadoop-aws"
-    ).map(group % _ % version % Provided)
+    ).map(group % _ % version % "provided, test, it")
   }
 
   lazy val postgresql: Seq[ModuleID] = Seq(
     "org.postgresql" % "postgresql" % "42.2.18"
+  )
+
+  lazy val awsJava: Seq[ModuleID] = Seq(
+    "com.amazonaws" % "aws-java-sdk" % "1.11.930"
   )
 }
 
