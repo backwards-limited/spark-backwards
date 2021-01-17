@@ -94,14 +94,13 @@ class S3Spec extends AnyWordSpec with Matchers with ForAllTestContainer {
           .config("spark.hadoop.fs.s3a.endpoint", container.endpointConfiguration(Service.S3).getServiceEndpoint)
           // Even though the mock S3 server does not require access credentials, it seems that the S3A layer currently performs a non-empty check
           .config("spark.hadoop.fs.s3a.access.key", "my access key")
-          // Even though the mock S3 server does not require access credentials, it seems that the S3A layer currently performs a non-empty check
           .config("spark.hadoop.fs.s3a.secret.key", "my secret key")
           .config("spark.hadoop.fs.s3a.attempts.maximum", "3")
           .config("spark.hadoop.fs.s3a.path.style.access", "true")
-          .config("spark.hadoop.fs.s3a.multiobjectdelete.enable","false")
+          .config("spark.hadoop.fs.s3a.multiobjectdelete.enable", "false")
           .config("spark.hadoop.fs.s3a.change.detection.version.required", "false")
           .config("spark.hadoop.fs.s3a.fast.upload.buffer", "bytebuffer")
-          .config("spark.hadoop.fs.s3a.fast.upload","true")
+          .config("spark.hadoop.fs.s3a.fast.upload", "true")
           // Unlike the AmazonS3 client, the S3A client does not offer an option to disable chunked encoding (as is available via the .disableChunkedEncoding method when building AmazonS3 directly).
           // S3A uses an S3ClientFactory in order to generate the internal AmazonS3 instance needed to communicate with the S3 endpoint.
           // The default implementation is DefaultS3ClientFactory - extend this and override createS3Client in order to apply the additional .disableChunkedEncoding option.
