@@ -62,6 +62,7 @@ def project(id: String, base: File): Project =
       watchTriggeredMessage := Watch.clearScreenOnTrigger,
       addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
       addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
+      addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
       libraryDependencies ++= Dependencies(),
       dependencyOverrides ++= Dependencies.overrides,
       fork := true,

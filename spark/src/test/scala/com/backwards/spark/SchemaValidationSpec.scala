@@ -1,20 +1,41 @@
 package com.backwards.spark
 
+import scala.language.postfixOps
 import scala.reflect.ClassTag
 import cats.effect.{IO, Resource}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder
-import org.apache.spark.sql.{DataFrame, Dataset, Encoder, Encoders, Row}
+import org.apache.spark.sql.{DataFrame, Dataset, Encoder, Encoders, Row, SparkSession}
 import org.apache.spark.sql.types.DataTypes.{DateType, IntegerType, LongType, StringType}
 import org.apache.spark.sql.types.{StructField, StructType}
+import org.scalacheck.util.SerializableCanBuildFroms.listCanBuildFrom
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import com.backwards.spark.Spark._
 import com.backwards.spark.typelevel.Attributes
+import better.files.Resource.{getUrl => resourceUrl}
+import cats.data.Kleisli
+import cats.implicits._
 
 class SchemaValidationSpec extends AnyWordSpec with Matchers {
-  "" should {
-    "" in {
+  val blahHardCoded: Kleisli[IO, SparkSession, Dataset[Blah]] =
+    Kleisli { spark =>
+      import spark.implicits._
+
+      IO(
+        spark.sparkContext.parallelize(
+          List(
+            (6, 66),
+            (8, 88)
+          )
+        )
+      ).map(rdd => rdd.toDF(Attributes[Blah]: _*).as[Blah])
+    }
+
+  val blahCsv: Kleisli[IO, SparkSession, Dataset[Blah]] =
+    Kleisli { spark =>
+      import spark.implicits._
+
       val schema: StructType =
         StructType(
           List(
@@ -23,69 +44,35 @@ class SchemaValidationSpec extends AnyWordSpec with Matchers {
           )
         )
 
-      val data =
-        List(
-          Row(8, 8),
-          Row(64, 64),
-        )
+      IO(
+        spark.read
+          .option("header", "false")
+          .schema(schema)
+          .csv(resourceUrl("blah.csv").getFile).as[Blah]
+      )
+    }
 
-      val program = {
+  "" should {
+    "" in {
+      val program: Kleisli[IO, SparkSession, (Dataset[Blah], Dataset[Blah])] =
         for {
-          spark <- sparkSession(_.appName("test").master("local"))
-          df <- Resource.liftF {
-            import spark.implicits._
+          b1 <- blahHardCoded
+          b2 <- blahCsv
+        } yield (b1, b2)
 
-            /*val x = new Encoder[Long] {
-              def schema: StructType = ???
+      val (blahs1: List[Blah], blahs2: List[Blah]) =
+        sparkSession(_.appName("test").master("local"))
+          .flatMap(ss =>
+            Resource.liftF(program run ss map {
+              case (ds1, ds2) =>
+                (ds1.collect.toList, ds2.collect.toList)
+            })
+          )
+          .use(_.pure[IO])
+          .unsafeRunSync
 
-              def clsTag: ClassTag[Long] = ???
-            }*/
-
-            /*implicit def x = Encoders.scalaInt
-            implicit def y = Encoders.scalaLong*/
-
-            /*implicit val tupleEncoder =
-              Encoders.tuple(Encoders.scalaInt, Encoders.scalaLong)*/
-
-            //implicit val def x = spar
-
-            //implicit def b = Encoders.product[Blah]
-
-
-            val v: RDD[(Int, Int)] = spark.sparkContext.parallelize(
-              List(
-                (8, 88)
-              )
-            )
-
-            println(v.toDF(Attributes[Blah].fieldNames: _*).as[Blah])
-
-
-            val x: DataFrame =
-              spark.read
-                .option("header", "false")
-                .schema(schema)
-                .csv("/Users/davidainslie/workspace/backwards/spark-backwards/spark/src/test/resources/blah.csv")
-
-            println(x.collect().toList.mkString(", "))
-
-            val y: Dataset[Blah] = x.as[Blah]
-
-            IO(
-              /*spark.createDataFrame(
-                spark.sparkContext.parallelize(data),
-                schema
-              ).as[Blah]*/
-              x.as[Blah]
-            )
-          }
-        } yield df.collect.toList
-      }
-
-      val result: List[Blah] =
-        program.use(r => IO(r)).unsafeRunSync
-
-      pprint.pprintln(result)
+      pprint.pprintln(blahs1)
+      pprint.pprintln(blahs2)
     }
   }
 }

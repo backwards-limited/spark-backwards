@@ -3,7 +3,7 @@
 There are two different ways you can interact with Spark. One way is to write a program in Scala (Java or Python) that uses Spark’s library - that is, its API. The other is to use the *Scala shell* (or *Python shell*).
 
 ```bash
-spark@spark-in-action:~$ spark-shell
+➜ spark-shell
 Setting default log level to "WARN".
 To adjust logging level use sc.setLogLevel(newLevel).
 Spark context Web UI available at http://10.0.2.15:4040
@@ -39,3 +39,8 @@ scala> bsdLines.count
 res0: Long = 33
 ```
 
+To boot the spark-shell with 3rd party jars such as **daria**:
+
+```scala
+➜ spark-shell --jars <absolute path>/spark-daria-0.35.2.jar
+```

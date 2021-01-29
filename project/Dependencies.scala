@@ -5,7 +5,7 @@ object Dependencies {
     scalatest, testcontainers, airframe,
     pprint, pureConfig, scopt, decline,
     cats, catsEffectTesting, console4Cats, log4Cats,
-    monocle, shapeless, chimney,
+    monocle, monix, shapeless, chimney,
     circe, avro4s,
     betterFiles,
     spark, daria, hadoop, postgresql, awsJava
@@ -30,7 +30,7 @@ object Dependencies {
 
   // TODO - Get rid of
   lazy val airframe: Seq[ModuleID] = Seq(
-    "org.wvlet.airframe" %% "airframe-log" % "20.11.0"
+    "org.wvlet.airframe" %% "airframe-log" % "21.1.1"
   )
 
   lazy val pprint: Seq[ModuleID] = Seq(
@@ -48,7 +48,7 @@ object Dependencies {
   }
   
   lazy val scopt: Seq[ModuleID] = Seq(
-    "com.github.scopt" %% "scopt" % "4.0.0-RC2"
+    "com.github.scopt" %% "scopt" % "4.0.0"
   )
 
   lazy val decline: Seq[ModuleID] = Seq(
@@ -57,7 +57,7 @@ object Dependencies {
 
   lazy val cats: Seq[ModuleID] = {
     val group = "org.typelevel"
-    val version = "2.2.0"
+    val version = "2.3.1"
 
     Seq(
       "cats-core", "cats-effect"
@@ -94,6 +94,10 @@ object Dependencies {
     ).map(group %% _ % version % "test, it")
   }
 
+  lazy val monix: Seq[ModuleID] = Seq(
+    "io.monix" %% "monix" % "3.3.0" withSources() withJavadoc()
+  )
+
   lazy val shapeless: Seq[ModuleID] = Seq(
     "com.chuusai" %% "shapeless" % "2.3.3"
   )
@@ -114,7 +118,7 @@ object Dependencies {
   }
 
   lazy val avro4s: Seq[ModuleID] = Seq(
-    "com.sksamuel.avro4s" %% "avro4s-core" % "4.0.2"
+    "com.sksamuel.avro4s" %% "avro4s-core" % "4.0.4"
   )
 
   lazy val betterFiles: Seq[ModuleID] = Seq(
@@ -134,7 +138,7 @@ object Dependencies {
 
   lazy val spark: Seq[ModuleID] = {
     val group = "org.apache.spark"
-    val version = "3.0.1"
+    val version = "3.1.0"
 
     Seq(
       "spark-core",
@@ -168,7 +172,7 @@ object Dependencies {
   )
 
   lazy val awsJava: Seq[ModuleID] = Seq(
-    "com.amazonaws" % "aws-java-sdk" % "1.11.930"
+    "com.amazonaws" % "aws-java-sdk" % "1.11.943"
   )
 }
 

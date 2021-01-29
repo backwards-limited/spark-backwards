@@ -20,7 +20,7 @@ object _7a {
   def main(args: Array[String]): Unit =
     program.unsafeRunSync()
 
-  def program: IO[Unit] =
+  val program: IO[Unit] =
     sparkSession(_.appName("7a").master("local")).use { spark =>
       val program: Kleisli[IO, SparkSession, Unit] =
         for {
@@ -33,7 +33,7 @@ object _7a {
       program run spark
     }
 
-  def csvs: Kleisli[IO, SparkSession, Dataset[Row]] =
+  val csvs: Kleisli[IO, SparkSession, Dataset[Row]] =
     Kleisli { spark =>
       IO(new StructType().add("date", StringType).add("value", FloatType)).map(schema =>
         spark.readStream
