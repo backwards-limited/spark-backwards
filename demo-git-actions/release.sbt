@@ -11,7 +11,6 @@ releaseProcess := Seq[ReleaseStep](
   commitReleaseVersion,       // ReleaseStep which performs the initial git checks
   tagRelease,
   // publishArtifacts,        // ReleaseStep which checks whether `publishTo` is properly set up
-  releaseStepCommandAndRemaining("publish"),
   setNextVersion,
   commitNextVersion,
   pushChanges                 // ReleaseStep which also checks that an upstream branch is properly configured
