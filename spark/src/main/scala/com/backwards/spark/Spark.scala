@@ -1,5 +1,6 @@
 package com.backwards.spark
 
+import scala.language.higherKinds
 import cats.effect.{IO, Resource, Sync}
 import cats.implicits._
 import org.apache.spark.sql.SparkSession

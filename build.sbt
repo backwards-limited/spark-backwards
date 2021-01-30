@@ -12,7 +12,7 @@ lazy val root =
     .aggregate(masterSpark)
     .aggregate(bigDataWithSparkEmr)
     .aggregate(bigDataHadoopSpark)
-    .dependsOn(spark, learningSpark, masterSpark, bigDataWithSparkEmr, bigDataHadoopSpark)
+    .dependsOn(spark, learningSpark, masterSpark, bigDataWithSparkEmr, bigDataHadoopSpark) // TODO - Should I get rid of this?
 
 lazy val spark =
   project("spark", file("spark"))
@@ -24,6 +24,7 @@ lazy val spark =
 
 lazy val demoGitActions =
   project("demo-git-actions", file("demo-git-actions"))
+    .dependsOn(spark)
 
 lazy val bigDataAnalysisWithScalaAndSpark =
   project("big-data-analysis-with-scala-and-spark", file("courses/big-data-analysis-with-scala-and-spark"))
