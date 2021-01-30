@@ -5,6 +5,7 @@ lazy val root =
   project("spark-backwards", file("."))
     .settings(description := "Backwards Spark module aggregation - Spark functionality includes example usage in various courses")
     .aggregate(spark)
+    .aggregate(demoGitActions)
     .aggregate(bigDataAnalysisWithScalaAndSpark)
     .aggregate(sparkByExamples)
     .aggregate(learningSpark, mnmcount, dataframe)
@@ -15,6 +16,14 @@ lazy val root =
 
 lazy val spark =
   project("spark", file("spark"))
+    .settings(
+      publishArtifact in Test := true,
+      publishArtifact in IntegrationTest := true,
+      addArtifact(artifact in (IntegrationTest, packageBin), packageBin in IntegrationTest).settings
+    )
+
+lazy val demoGitActions =
+  project("demo-git-actions", file("demo-git-actions"))
 
 lazy val bigDataAnalysisWithScalaAndSpark =
   project("big-data-analysis-with-scala-and-spark", file("courses/big-data-analysis-with-scala-and-spark"))
