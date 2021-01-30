@@ -19,7 +19,7 @@ jobs:
       - name: Build Fat Jar - Specifying the "main"
         run: sbt -J-Xms2048m -J-Xmx2048m -J-DmainClass=com.backwards.spark.demo.App demo-git-actions/assembly
       - name: S3 Upload Jar
-        uses: jakejarvis/s3-sync-action@master
+        uses: backwards-limited/s3-sync-action@master
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}/jar/
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
