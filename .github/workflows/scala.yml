@@ -19,10 +19,10 @@ jobs:
       - name: Build Fat Jar
         run: sbt "project demo-git-actions" assembly
       - name: S3 Upload Jar
-        uses: backwards-limited/s3-sync-action@master
+        uses: jakejarvis/s3-sync-action@master
       env:
         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}/jar/
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: "eu-west-2"
-        FILE: "demo-git-actions/target/scala-2.12/demo-git-actions.jar"
+        SOURCE_DIR: "demo-git-actions/target/scala-2.12/demo-git-actions.jar"
