@@ -1,10 +1,9 @@
-package com.backwards.spark
+package com.backwards.spark.demo
 
 import cats.data.Kleisli
 import cats.effect.IO
 import cats.implicits._
-import org.apache.spark.sql.streaming.StreamingQuery
-import org.apache.spark.sql.{Dataset, Row, SparkSession}
+import org.apache.spark.sql.SparkSession
 import com.backwards.spark.Spark._
 
 object App {

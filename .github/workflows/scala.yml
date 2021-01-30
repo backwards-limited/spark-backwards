@@ -16,8 +16,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build Fat Jar
-        run: sbt "project demo-git-actions" assembly
+      - name: Build Fat Jar - Specifying the "main"
+        run: sbt -J-Xms2048m -J-Xmx2048m -J-DmainClass=com.backwards.spark.demo.App demo-git-actions/assembly
       - name: S3 Upload Jar
         uses: jakejarvis/s3-sync-action@master
         env:

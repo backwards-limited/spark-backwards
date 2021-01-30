@@ -108,5 +108,5 @@ events
 
 metastore_db/*
 spark-warehouse/*
-/courses/master-spark/course/
-/courses/master-spark/course/*
+courses/master-spark/course/
+courses/master-spark/course/*
