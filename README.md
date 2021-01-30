@@ -10,6 +10,8 @@ Example usage included while covering various courses.
 
 - [SBT](docs/sbt.md)
 
+- [Release](docs/release.md)
+
 - [Introduction](docs/introduction.md)
 
 - [Hadoop](docs/hadoop.md)
