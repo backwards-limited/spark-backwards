@@ -19,7 +19,7 @@ jobs:
       - name: Build Fat Jar
         run: sbt "project demo-git-actions" assembly
       - name: S3 Upload Jar
-        uses: backwards-limited/spark-backwards@master
+        uses: tpaschalis/s3-sync-action@master
       env:
         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}/jar/
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
