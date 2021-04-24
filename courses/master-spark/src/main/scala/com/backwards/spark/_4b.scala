@@ -3,6 +3,7 @@ package com.backwards.spark
 import scala.util.chaining._
 import better.files.Resource.{getUrl => resourceUrl}
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import com.backwards.spark.Spark._
 

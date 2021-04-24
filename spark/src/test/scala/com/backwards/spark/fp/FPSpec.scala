@@ -1,6 +1,6 @@
 package com.backwards.spark.fp
 
-import scala.concurrent.duration._
+/*import scala.concurrent.duration._
 import scala.util.Random
 import cats._
 import cats.data._
@@ -12,12 +12,13 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import com.backwards.spark.Spark._
+import com.backwards.spark.SparkDeprecated._*/
 
 /**
  * [[https://iravid.com/posts/fp-and-spark.html Functional Programming and Spark]]
  */
-class FPSpec extends AnyWordSpec with Matchers {
+// TODO - Is Monix up to date with Cats Effect 3 ?
+class FPSpec /*extends AnyWordSpec with Matchers {
   "Spark" should {
     "IO (one way)" in {
       def program(spark: SparkSession): IO[Row] = {
@@ -33,8 +34,10 @@ class FPSpec extends AnyWordSpec with Matchers {
 
       val result: Resource[IO, Row] = for {
         spark <- sparkSession(_.appName("test").master("local"))
-        result <- Resource.liftF(program(spark))
+        result <- Resource.eval(program(spark))
       } yield result
+
+      import cats.effect.unsafe.implicits.global
 
       println(result.use(_.pure[IO]).unsafeRunSync())
     }
@@ -51,7 +54,9 @@ class FPSpec extends AnyWordSpec with Matchers {
         }
       }
 
-      println(result.unsafeRunSync)
+      import cats.effect.unsafe.implicits.global
+
+      println(result.unsafeRunSync())
     }
   }
 
@@ -234,17 +239,13 @@ class FPSpec extends AnyWordSpec with Matchers {
     }
 
     "task with IndexedStateT as an improvement" in {
-      /*
-      The only issue that we might take with the above design is that we shoved all the data into the state, while the keys aren’t needed when running transformDF.
-      Additionally, we had to introduce an artificial empty state; this goes against a good practice of making illegal states unrepresentable.
-      */
+      // The only issue that we might take with the above design is that we shoved all the data into the state, while the keys aren’t needed when running transformDF.
+      // Additionally, we had to introduce an artificial empty state; this goes against a good practice of making illegal states unrepresentable.
 
-      /*
-      We can use IndexedStateT to model this more accurately; this is a data type similar to StateT that differs by having different types for input and output states.
-      Formally, it is a function of the form
-      SA => F[(SB, A)]
-      where SA and SB represent the input and output states.
-      */
+      // We can use IndexedStateT to model this more accurately; this is a data type similar to StateT that differs by having different types for input and output states.
+      // Formally, it is a function of the form
+      // SA => F[(SB, A)]
+      // where SA and SB represent the input and output states.
 
       // To use it, we’ll define separate states for our program:
 
@@ -285,10 +286,8 @@ class FPSpec extends AnyWordSpec with Matchers {
           Task(Done(s.df limit 3))
         }
 
-      /*
-      Note how functions that stay within the same state type are still using the plain StateT.
-      This is because StateT is actually an alias for IndexedStateT[F, S, S, A] - a state transition that does not change the state type.
-      */
+      // Note how functions that stay within the same state type are still using the plain StateT.
+      // This is because StateT is actually an alias for IndexedStateT[F, S, S, A] - a state transition that does not change the state type.
 
       def buildSession: Task[SparkSession] = Task {
         SparkSession
@@ -317,4 +316,4 @@ class FPSpec extends AnyWordSpec with Matchers {
       // we’d need to define a monad stack of IndexedStateT[TimedTask, SA, SB, A] and define the timed combinators for this stack.
     }
   }
-}
+}*/

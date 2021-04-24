@@ -3,6 +3,7 @@ package com.backwards.spark
 import java.net.URL
 import better.files.Resource.{getUrl => resourceUrl}
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import org.apache.spark.sql.types.DataTypes._
 import org.apache.spark.sql.types.{StructField, StructType}

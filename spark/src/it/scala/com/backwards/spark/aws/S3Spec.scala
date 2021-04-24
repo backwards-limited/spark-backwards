@@ -4,6 +4,7 @@ import java.io.File
 import scala.util.chaining.scalaUtilChainingOps
 import cats.data.Kleisli
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import org.apache.hadoop.fs.s3a.S3AFileSystem
 import org.apache.spark.sql.types.{IntegerType, StructField, StructType}
@@ -14,7 +15,7 @@ import org.testcontainers.containers.localstack.LocalStackContainer.Service
 import com.amazonaws.services.s3.model._
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import com.dimafeng.testcontainers.{ForAllTestContainer, LocalStackContainer}
-import com.backwards.spark.Spark._
+import com.backwards.spark.SparkDeprecated._
 
 /**
  * [[https://medium.com/@sumitsu/unit-testing-aws-s3-integrated-scala-spark-components-using-local-s3-mocking-tools-8bb90fd58fa2 Unit-testing AWS S3-integrated Scala / Spark components using local S3 mocking tools]]
@@ -38,21 +39,21 @@ class S3Spec extends AnyWordSpec with Matchers with ForAllTestContainer {
     LocalStackContainer(services = List(Service.S3))
 
   def createBucket(name: String): Kleisli[IO, AmazonS3, Bucket] =
-    Kleisli { s3 =>
+    Kleisli(s3 =>
       IO(s3.createBucket(new CreateBucketRequest(name)))
-    }
+    )
 
   def write(bucketName: String, file: File): Kleisli[IO, AmazonS3, PutObjectResult] =
-    Kleisli { s3 =>
+    Kleisli(s3 =>
       IO delay s3.putObject(new PutObjectRequest(bucketName, file.getName, file))
-    }
+    )
 
   // TODO - Resource.make resulting in a Resource instead of S3Object
   // TODO - Refine types
   def read(bucketName: String, key: String, versionId: String): Kleisli[IO, AmazonS3, S3Object] =
-    Kleisli { s3 =>
+    Kleisli(s3 =>
       IO delay s3.getObject(new GetObjectRequest(bucketName, key).withVersionId(versionId))
-    }
+    )
 
   def write(path: String): Kleisli[IO, SparkSession, Dataset[Row]] =
     Kleisli { spark =>
@@ -116,7 +117,7 @@ class S3Spec extends AnyWordSpec with Matchers with ForAllTestContainer {
       val program: IO[Dataset[Row]] =
         sparkSession(sparkBuilder).use(process(s3))
 
-      program.unsafeRunSync
+      program.unsafeRunSync()
 
       // TODO - WIP
       succeed

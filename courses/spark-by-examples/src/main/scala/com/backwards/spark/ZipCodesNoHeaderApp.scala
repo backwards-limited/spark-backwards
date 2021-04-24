@@ -2,6 +2,7 @@ package com.backwards.spark
 
 import scala.io.StdIn
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 

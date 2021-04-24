@@ -2,6 +2,7 @@ package com.backwards.spark
 
 import cats.data.Kleisli
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import org.apache.spark.sql.functions.avg
 import org.apache.spark.sql.streaming.StreamingQuery

@@ -4,8 +4,6 @@ Using Backwards Spark functionality and following [Big Data Hadoop Spark course]
 
 Note that this module is within a multi-module project and that there is only one top level build (build.sbt).
 
-## Table of Contents
-
 - [Introduction](docs/introduction.md)
 - [Hadoop](docs/hadoop.md)
 - [Spark](docs/spark.md)
@@ -17,3 +15,4 @@ Note that this module is within a multi-module project and that there is only on
 - [AWS with Glue & Athena](docs/aws-glue-athena.md)
 - [Advanced Datasets](docs/advanced-datasets.md)
 - [Cloudera](docs/cloudera.md)
+- [Streaming](docs/streaming.md)

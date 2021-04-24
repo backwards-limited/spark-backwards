@@ -12,14 +12,15 @@ lazy val root =
     .aggregate(masterSpark)
     .aggregate(bigDataWithSparkEmr)
     .aggregate(bigDataHadoopSpark)
-    .dependsOn(spark, learningSpark, masterSpark, bigDataWithSparkEmr, bigDataHadoopSpark) // TODO - Do I need this?
+    .aggregate(sparkInAction)
+    .dependsOn(spark, learningSpark, masterSpark, bigDataWithSparkEmr, bigDataHadoopSpark, sparkInAction) // TODO - Do I need this?
 
 lazy val spark =
   project("spark", file("spark"))
     .settings(
-      publishArtifact in Test := true,
-      publishArtifact in IntegrationTest := true,
-      addArtifact(artifact in (IntegrationTest, packageBin), packageBin in IntegrationTest).settings
+      Test / publishArtifact := true,
+      IntegrationTest / publishArtifact := true,
+      addArtifact(IntegrationTest / packageBin / artifact, IntegrationTest / packageBin).settings
     )
 
 lazy val demoGitActions =
@@ -54,12 +55,15 @@ lazy val bigDataHadoopSpark =
 lazy val sparkAndHadoopCourse =
   project("spark-and-hadoop", file("courses/spark-and-hadoop"))
 
+lazy val sparkInAction =
+  project("spark-in-action", file("courses/spark-in-action"))
+
 def project(id: String, base: File): Project =
   Project(id, base)
     .enablePlugins(JavaAppPackaging, DockerComposePlugin)
     .configs(IntegrationTest)
     .settings(Defaults.itSettings)
-    .settings(testFrameworks in IntegrationTest := Seq(TestFrameworks.ScalaTest))
+    .settings(IntegrationTest / testFrameworks := Seq(TestFrameworks.ScalaTest))
     .settings(
       resolvers ++= Seq(
         "jitpack" at "https://jitpack.io"
@@ -76,14 +80,14 @@ def project(id: String, base: File): Project =
       libraryDependencies ++= Dependencies(),
       dependencyOverrides ++= Dependencies.overrides,
       fork := true,
-      javaOptions in IntegrationTest ++= environment.map { case (key, value) => s"-D$key=$value" }.toSeq,
-      scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),
-      run in Compile := Defaults.runTask(fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run)).evaluated,
-      runMain in Compile := Defaults.runMainTask(fullClasspath in Compile, runner in (Compile, run)).evaluated,
-      assemblyJarName in assembly := s"$id.jar",
-      test in assembly := {},
-      mainClass in assembly := Some(System.getProperty("mainClass")),
-      assemblyMergeStrategy in assembly := {
+      IntegrationTest / javaOptions ++= environment.map { case (key, value) => s"-D$key=$value" }.toSeq,
+      Compile / doc / scalacOptions ++= Seq("-groups", "-implicits", "-Ylog-classpath"),
+      Compile / run := Defaults.runTask(Compile / fullClasspath, Compile / run / mainClass, Compile / run / runner).evaluated,
+      Compile / runMain := Defaults.runMainTask(Compile / fullClasspath, Compile / run / runner).evaluated,
+      assembly / assemblyJarName := s"$id.jar",
+      assembly / test := {},
+      assembly / mainClass := Some(System.getProperty("mainClass")),
+      assembly / assemblyMergeStrategy := {
         case x if Assembly.isConfigFile(x) =>
           MergeStrategy.concat
 
@@ -117,15 +121,15 @@ def project(id: String, base: File): Project =
     .settings(
       // To use 'dockerComposeTest' to run tests in the 'IntegrationTest' scope instead of the default 'Test' scope:
       // 1) Package the tests that exist in the IntegrationTest scope
-      testCasesPackageTask := (sbt.Keys.packageBin in IntegrationTest).value,
+      testCasesPackageTask := (IntegrationTest / packageBin).value,
       // 2) Specify the path to the IntegrationTest jar produced in Step 1
-      testCasesJar := artifactPath.in(IntegrationTest, packageBin).value.getAbsolutePath,
+      testCasesJar := (IntegrationTest / packageBin / artifactPath).value.getAbsolutePath,
       // 3) Include any IntegrationTest scoped resources on the classpath if they are used in the tests
       testDependenciesClasspath := {
-        val fullClasspathCompile = (fullClasspath in Compile).value
-        val classpathTestManaged = (managedClasspath in IntegrationTest).value
-        val classpathTestUnmanaged = (unmanagedClasspath in IntegrationTest).value
-        val testResources = (resources in IntegrationTest).value
+        val fullClasspathCompile = (Compile / fullClasspath).value
+        val classpathTestManaged = (IntegrationTest / managedClasspath).value
+        val classpathTestUnmanaged = (IntegrationTest / unmanagedClasspath).value
+        val testResources = (IntegrationTest / resources).value
         (fullClasspathCompile.files ++ classpathTestManaged.files ++ classpathTestUnmanaged.files ++ testResources).map(_.getAbsoluteFile).mkString(java.io.File.pathSeparator)
       }
     )

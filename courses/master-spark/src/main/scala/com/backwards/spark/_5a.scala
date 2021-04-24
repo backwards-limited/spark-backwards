@@ -4,6 +4,7 @@ import java.net.URL
 import better.files.Resource.{getUrl => resourceUrl}
 import cats.data.Kleisli
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import org.apache.spark.sql.{Dataset, Row, SparkSession}
 import org.apache.spark.sql.functions._

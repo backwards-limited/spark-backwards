@@ -1,0 +1,70 @@
+# How to create an Apache Spark 3.0 development cluster on a single machine using Docker
+# https://medium.com/agile-lab-engineering/how-to-create-an-apache-spark-3-0-development-cluster-on-a-single-machine-using-docker-964478c3735b
+# https://github.com/big-data-europe/docker-spark
+
+# Boot and run a shell on the master node:
+# docker-compose up
+
+# docker ps --format '{{.ID}} {{.Names}}'
+# b9064932 spark-worker-3
+# 2c874932 spark-worker-2
+# e85w4932 spark-worker-1
+# 4593ccf2 spark-master
+
+# docker exec -it 4593ccf2 /bin/bash
+
+# And from here launch spark-shell
+# /spark/bin/spark-shell --master spark://spark-master:7077 --total-executor-cores 6 --executor-memory 2560m
+
+version: "2"
+
+services:
+  spark-master:
+    image: bde2020/spark-master:3.0.1-hadoop3.2
+    container_name: spark-master
+    ports:
+      - 8080:8080
+      - 7077:7077
+    environment:
+      - INIT_DAEMON_STEP=setup_spark
+    volumes:
+      - shared-data:/data
+
+  spark-worker-1:
+    image: bde2020/spark-worker:3.0.1-hadoop3.2
+    container_name: spark-worker-1
+    depends_on:
+      - spark-master
+    ports:
+      - 8081:8081
+    environment:
+      - "SPARK_MASTER=spark://spark-master:7077"
+    volumes:
+      - shared-data:/data
+
+  spark-worker-2:
+    image: bde2020/spark-worker:3.0.1-hadoop3.2
+    container_name: spark-worker-2
+    depends_on:
+      - spark-master
+    ports:
+      - 8082:8081
+    environment:
+      - "SPARK_MASTER=spark://spark-master:7077"
+    volumes:
+      - shared-data:/data
+
+  spark-worker-3:
+    image: bde2020/spark-worker:3.0.1-hadoop3.2
+    container_name: spark-worker-3
+    depends_on:
+      - spark-master
+    ports:
+      - 8083:8081
+    environment:
+      - "SPARK_MASTER=spark://spark-master:7077"
+    volumes:
+      - shared-data:/data
+
+volumes:
+  shared-data:

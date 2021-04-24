@@ -3,6 +3,7 @@ package com.backwards.spark
 import scala.util.chaining.scalaUtilChainingOps
 import cats.data.Kleisli
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{Dataset, Row, SparkSession}

@@ -1,21 +1,18 @@
 package com.backwards.spark
 
 import scala.language.postfixOps
-import scala.reflect.ClassTag
-import cats.effect.{IO, Resource}
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder
-import org.apache.spark.sql.{DataFrame, Dataset, Encoder, Encoders, Row, SparkSession}
-import org.apache.spark.sql.types.DataTypes.{DateType, IntegerType, LongType, StringType}
-import org.apache.spark.sql.types.{StructField, StructType}
-import org.scalacheck.util.SerializableCanBuildFroms.listCanBuildFrom
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import com.backwards.spark.Spark._
-import com.backwards.spark.typelevel.Attributes
 import better.files.Resource.{getUrl => resourceUrl}
 import cats.data.Kleisli
+import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
+import org.apache.spark.sql.types.DataTypes.{IntegerType, LongType}
+import org.apache.spark.sql.types.{StructField, StructType}
+import org.apache.spark.sql.{Dataset, SparkSession}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import com.backwards.spark.SparkDeprecated._
+import com.backwards.spark.typelevel.Attributes
 
 class SchemaValidationSpec extends AnyWordSpec with Matchers {
   val blahHardCoded: Kleisli[IO, SparkSession, Dataset[Blah]] =
@@ -29,7 +26,7 @@ class SchemaValidationSpec extends AnyWordSpec with Matchers {
             (8, 88)
           )
         )
-      ).map(rdd => rdd.toDF(Attributes[Blah]: _*).as[Blah])
+      ).map(_.toDF(Attributes[Blah]: _*).as[Blah])
     }
 
   val blahCsv: Kleisli[IO, SparkSession, Dataset[Blah]] =
@@ -61,15 +58,9 @@ class SchemaValidationSpec extends AnyWordSpec with Matchers {
         } yield (b1, b2)
 
       val (blahs1: List[Blah], blahs2: List[Blah]) =
-        sparkSession(_.appName("test").master("local"))
-          .flatMap(ss =>
-            Resource.liftF(program run ss map {
-              case (ds1, ds2) =>
-                (ds1.collect.toList, ds2.collect.toList)
-            })
-          )
-          .use(_.pure[IO])
-          .unsafeRunSync
+        sparkSession(_.appName("test").master("local")).use(program.run).map {
+          case (ds1, ds2) => (ds1.collect.toList, ds2.collect.toList)
+        }.unsafeRunSync()
 
       pprint.pprintln(blahs1)
       pprint.pprintln(blahs2)
