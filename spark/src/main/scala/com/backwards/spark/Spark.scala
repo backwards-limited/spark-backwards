@@ -16,7 +16,7 @@ object SparkDeprecated {
       IO(println("Aquiring Spark Session")) >> IO(f(SparkSession.builder).getOrCreate)
 
     val release: SparkSession => IO[Unit] =
-      spark => IO(println("Closing Spark Session")).as(spark.close())
+      spark => IO(println("Closing Spark Session")) >> IO(spark.close())
 
     Resource.make(acquire)(release)
   }
@@ -27,7 +27,7 @@ object SparkDeprecated {
       Sync[F].delay(println("Aquiring Spark Session")) >> Sync[F].delay(f(SparkSession.builder).getOrCreate)
 
     val release: SparkSession => F[Unit] =
-      spark => Sync[F].delay(println("Closing Spark Session")).as(spark.close())
+      spark => Sync[F].delay(println("Closing Spark Session")) >> Sync[F].delay(spark.close())
 
     Resource.make(acquire)(release)
   }

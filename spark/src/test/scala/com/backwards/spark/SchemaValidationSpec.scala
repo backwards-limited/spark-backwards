@@ -51,16 +51,14 @@ class SchemaValidationSpec extends AnyWordSpec with Matchers {
 
   "" should {
     "" in {
-      val program: Kleisli[IO, SparkSession, (Dataset[Blah], Dataset[Blah])] =
+      val program: Kleisli[IO, SparkSession, (List[Blah], List[Blah])] =
         for {
           b1 <- blahHardCoded
           b2 <- blahCsv
-        } yield (b1, b2)
+        } yield (b1.collect().toList, b2.collect().toList)
 
       val (blahs1: List[Blah], blahs2: List[Blah]) =
-        sparkSession(_.appName("test").master("local")).use(program.run).map {
-          case (ds1, ds2) => (ds1.collect.toList, ds2.collect.toList)
-        }.unsafeRunSync()
+        sparkSession(_.appName("test").master("local")).use(program.run).unsafeRunSync()
 
       pprint.pprintln(blahs1)
       pprint.pprintln(blahs2)

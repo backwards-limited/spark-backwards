@@ -4,7 +4,7 @@ import cats.data.Kleisli
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import cats.implicits._
-import org.apache.spark.sql.{Dataset, Row, SparkSession}
+import org.apache.spark.sql.{Dataset, Row, SaveMode, SparkSession}
 import com.backwards.spark.Spark._
 
 /**
@@ -28,7 +28,7 @@ object SparkExample {
         for {
           courses <- courses
           _ = courses.show()
-          _ <- Kleisli.liftF(IO(courses.write.format("csv").save("samplesq")))
+          _ <- Kleisli.liftF(IO(courses.write.mode(SaveMode.Overwrite).format("csv").save("samplesq")))
         } yield ()
 
       program run spark
