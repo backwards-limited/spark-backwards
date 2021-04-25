@@ -1,6 +1,6 @@
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.streaming.OutputMode
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
+import org.apache.spark.sql.streaming.{OutputMode, StreamingQuery}
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
 
 
@@ -17,12 +17,15 @@ object StructuredStreamingDemo {
 
     println("Spark Session created")
 
-    val schema = StructType(Array(StructField("empId",StringType),StructField("empName",StringType)))
+    val schema: StructType =
+      StructType(Array(StructField("empId",StringType),StructField("empName",StringType)))
 
     // Create a "inputDir" under the
-    val streamDF = spark.readStream.option("header","true").schema(schema).csv("C:\\inputDir")
+    val streamDF: Dataset[Row]] =
+      spark.readStream.option("header","true").schema(schema).csv("C:\\inputDir")
 
-    val query = streamDF.writeStream.format("console").outputMode(OutputMode.Update()).start()
+    val query: StreamingQuery =
+      streamDF.writeStream.format("console").outputMode(OutputMode.Update()).start()
 
 
     query.awaitTermination()
