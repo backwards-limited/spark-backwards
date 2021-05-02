@@ -1,5 +1,6 @@
 package com.backwards.spark
 
+import scala.language.postfixOps
 import better.files.Resource
 import cats.data.ReaderT
 import cats.effect.IO
@@ -16,11 +17,11 @@ object StructuredStreamingExample {
       .unsafeRunSync()
 
   def program: ReaderT[IO, SparkSession, Unit] =
-    ReaderT(readEmployees).flatMapF(writeEmployees).map(_.awaitTermination())
+    ReaderT(readEmployees).flatMapF(writeEmployees).map(_.awaitTermination(2000))
 
   def readEmployees(spark: SparkSession): IO[Dataset[Row]] =
     IO(StructType(Array(StructField("empId", StringType), StructField("empName", StringType)))).map(schema =>
-      spark.readStream.option("header","true").schema(schema).csv(Resource.getUrl("employees").getPath)
+      spark.readStream.option("header","true").schema(schema).csv(Resource getUrl "employees" getPath)
     )
 
   def writeEmployees(employees: Dataset[Row]): IO[StreamingQuery] =
