@@ -1,3 +1,0 @@
-phone,sale_volume
-android,5
-iPhone,4

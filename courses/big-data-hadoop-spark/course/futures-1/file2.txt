@@ -1,3 +1,0 @@
-empiId,empName
-3,John
-4,Paul
