@@ -1,0 +1,51 @@
+# https://onexlab-io.medium.com/docker-compose-postgres-initdb-ba0021deef76
+# https://gist.github.com/Kartones/dd3ff5ec5ea238d4c546
+
+# psql -U root -h localhost
+# http://localhost:16543/browser
+
+# PSQL
+# View databases:
+# \l
+
+# Switch to database:
+# \c spark_labs
+
+# View tables:
+# \dt
+
+# View table data:
+# \x
+# select * from ch02;
+# OR
+# table ch02;
+
+version: "3.6"
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      DATABASE_HOST: 127.0.0.1
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: root
+      POSTGRES_HOST_AUTH_METHOD: trust
+
+    ports:
+      - 5432:5432
+
+    volumes:
+      - ./postgres/1-init.sql:/docker-entrypoint-initdb.d/1-init.sql
+      # - ./postgres/2-init.sql:/docker-entrypoint-initdb.d/2-init.sql
+
+  pgadmin-compose:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "test@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "test123!"
+    ports:
+      - 16543:80
+    depends_on:
+      - postgres

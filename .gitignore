@@ -97,7 +97,6 @@ hs_err_pid*
 target
 
 spark-vm/*
-spark-in-action
 book
 out
 output
@@ -110,3 +109,5 @@ metastore_db/*
 spark-warehouse/*
 courses/master-spark/course/
 courses/master-spark/course/*
+courses/spark-in-action/course/
+courses/spark-in-action/course/*
