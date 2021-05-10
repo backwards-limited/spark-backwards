@@ -15,7 +15,7 @@ import org.testcontainers.containers.localstack.LocalStackContainer.Service
 import com.amazonaws.services.s3.model._
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import com.dimafeng.testcontainers.{ForAllTestContainer, LocalStackContainer}
-import com.backwards.spark.SparkDeprecated._
+import com.backwards.spark.Spark._
 
 /**
  * [[https://medium.com/@sumitsu/unit-testing-aws-s3-integrated-scala-spark-components-using-local-s3-mocking-tools-8bb90fd58fa2 Unit-testing AWS S3-integrated Scala / Spark components using local S3 mocking tools]]

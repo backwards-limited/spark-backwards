@@ -56,7 +56,7 @@ lazy val sparkAndHadoopCourse =
   project("spark-and-hadoop", file("courses/spark-and-hadoop"))
 
 lazy val sparkInAction =
-  project("spark-in-action", file("courses/spark-in-action"))
+  project("spark-in-action", file("courses/spark-in-action")).dependsOn(spark)
 
 def project(id: String, base: File): Project =
   Project(id, base)

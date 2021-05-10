@@ -17,7 +17,7 @@ import org.testcontainers.containers.localstack.LocalStackContainer.Service
 import com.amazonaws.services.s3.model._
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import com.dimafeng.testcontainers.{ContainerDef, ForAllTestContainer, LocalStackContainer, MockServerContainer, MultipleContainers, SingleContainer}
-import com.backwards.spark.Spark._
+import com.backwards.spark.SparkS3._
 import com.backwards.spark.aws.NonChunkedDefaultS3ClientFactory
 import sttp.client3.okhttp.OkHttpSyncBackend
 import sttp.model.StatusCode

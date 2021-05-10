@@ -11,7 +11,7 @@ import org.apache.spark.sql.types.{StructField, StructType}
 import org.apache.spark.sql.{Dataset, SparkSession}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import com.backwards.spark.SparkDeprecated._
+import com.backwards.spark.Spark._
 import com.backwards.spark.typelevel.Attributes
 
 class SchemaValidationSpec extends AnyWordSpec with Matchers {
