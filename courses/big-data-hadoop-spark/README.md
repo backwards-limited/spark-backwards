@@ -16,3 +16,4 @@ Note that this module is within a multi-module project and that there is only on
 - [Advanced Datasets](docs/advanced-datasets.md)
 - [Cloudera](docs/cloudera.md)
 - [Streaming](docs/streaming.md)
+- [AWS S3, Glue and Athena](docs/s3-glue-athena.md)
