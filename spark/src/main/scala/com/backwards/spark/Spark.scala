@@ -7,7 +7,7 @@ import org.apache.spark.sql.SparkSession
 
 // TODO - Monadic logging
 object Spark {
-  def sparkSession(f: SparkSession.Builder => SparkSession.Builder): Resource[IO, SparkSession] = {
+  def sparkResource(f: SparkSession.Builder => SparkSession.Builder): Resource[IO, SparkSession] = {
     val acquire: IO[SparkSession] =
       IO(println("Aquiring Spark Session")) >> IO(f(SparkSession.builder).getOrCreate)
 
@@ -18,7 +18,7 @@ object Spark {
   }
 
   // TODO - Might replace the above with this
-  def sparkSessionX[F[_]: Sync](f: SparkSession.Builder => SparkSession.Builder): Resource[F, SparkSession] = {
+  def sparkResource2[F[_]: Sync](f: SparkSession.Builder => SparkSession.Builder): Resource[F, SparkSession] = {
     val acquire: F[SparkSession] =
       Sync[F].delay(println("Aquiring Spark Session")) >> Sync[F].delay(f(SparkSession.builder).getOrCreate)
 

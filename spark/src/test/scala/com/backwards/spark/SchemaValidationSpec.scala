@@ -58,7 +58,7 @@ class SchemaValidationSpec extends AnyWordSpec with Matchers {
         } yield (b1.collect().toList, b2.collect().toList)
 
       val (blahs1: List[Blah], blahs2: List[Blah]) =
-        sparkSession(_.appName("test").master("local")).use(program.run).unsafeRunSync()
+        sparkResource(_.appName("test").master("local")).use(program.run).unsafeRunSync()
 
       pprint.pprintln(blahs1)
       pprint.pprintln(blahs2)

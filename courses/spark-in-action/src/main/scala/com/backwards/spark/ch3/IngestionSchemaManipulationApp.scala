@@ -8,7 +8,7 @@ import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import org.apache.spark.sql.functions.{col, concat, lit, split}
 import org.apache.spark.sql.{Column, Dataset, Row, SparkSession}
-import com.backwards.spark.Spark.sparkSession
+import com.backwards.spark.Spark.sparkResource
 
 /**
  * Read CSV which has:
@@ -23,9 +23,9 @@ import com.backwards.spark.Spark.sparkSession
  * The goal is to merge 2 dataframes (just as you can perform a SQL union of 2 tables).
  * To make the union effective, we need similarly named columns in both dataframes.
  */
-object IngestionSchemaManipulationScalaApp {
+object IngestionSchemaManipulationApp {
   def main(array: Array[String]): Unit =
-    sparkSession(_.appName("ingestion-schema-manipulation").master("local[*]"))
+    sparkResource(_.appName("ingestion-schema-manipulation").master("local[*]"))
       .use(program.run)
       .unsafeRunSync()
 

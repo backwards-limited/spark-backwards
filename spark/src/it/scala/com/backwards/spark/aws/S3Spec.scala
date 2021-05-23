@@ -115,7 +115,7 @@ class S3Spec extends AnyWordSpec with Matchers with ForAllTestContainer {
       } yield r
 
       val program: IO[Dataset[Row]] =
-        sparkSession(sparkBuilder).use(process(s3))
+        sparkResource(sparkBuilder).use(process(s3))
 
       program.unsafeRunSync()
 

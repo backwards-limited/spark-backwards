@@ -9,7 +9,7 @@ import com.backwards.spark.Spark._
 
 object App {
   def main(args: Array[String]): Unit =
-    sparkSession(_.appName("7b").master("local")).use(program.run).unsafeRunSync()
+    sparkResource(_.appName("7b").master("local")).use(program.run).unsafeRunSync()
 
   def program: Kleisli[IO, SparkSession, Unit] =
     Kleisli { spark =>
