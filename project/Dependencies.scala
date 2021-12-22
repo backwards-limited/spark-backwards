@@ -8,7 +8,7 @@ object Dependencies {
     monocle, /*monix,*/ shapeless, chimney,
     circe, avro4s,
     sttp,
-    betterFiles, spark, daria, hadoop, postgresql, awsJava
+    betterFiles, spark, /*daria,*/ hadoop, postgresql, awsJava
   ).flatten
 
   def overrides: Seq[ModuleID] = Seq(
@@ -161,7 +161,7 @@ object Dependencies {
 
   lazy val spark: Seq[ModuleID] = {
     val group = "org.apache.spark"
-    val version = "3.1.1"
+    val version = "3.2.0"
 
     Seq(
       "spark-core",
@@ -175,13 +175,13 @@ object Dependencies {
     ).map(group %% _ % version % "provided, test, it")
   }
 
-  lazy val daria: Seq[ModuleID] = Seq(
+  /*lazy val daria: Seq[ModuleID] = Seq(
     "com.github.mrpowers" %% "spark-daria" % "1.0.0"
-  )
+  )*/
 
   lazy val hadoop: Seq[ModuleID] = {
     val group = "org.apache.hadoop"
-    val version = "3.3.0"
+    val version = "3.3.1"
 
     Seq(
       "hadoop-common",
