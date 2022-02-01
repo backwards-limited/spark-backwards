@@ -134,13 +134,13 @@ class StackOverflow extends Serializable {
 
       for (i <- 0 until size) {
         assert(iter.hasNext, s"iterator must have at least $size elements")
-        res(i) = iter.next
+        res(i) = iter.next()
       }
 
       var i = size.toLong
       while (iter.hasNext) {
-        val elt = iter.next
-        val j = math.abs(rnd.nextLong) % i
+        val elt = iter.next()
+        val j = math.abs(rnd.nextLong()) % i
         if (j < size)
           res(j.toInt) = elt
         i += 1
@@ -152,11 +152,11 @@ class StackOverflow extends Serializable {
     val res =
       if (langSpread < 500)
       // sample the space regardless of the language
-        vectors.takeSample(false, kmeansKernels, 42)
+        vectors.takeSample(withReplacement = false, kmeansKernels, 42)
       else
       // sample the space uniformly from each language partition
-        vectors.groupByKey.flatMap({
-          case (lang, vectors) => reservoirSampling(lang, vectors.toIterator, perLang).map((lang, _))
+        vectors.groupByKey().flatMap({
+          case (lang, vectors) => reservoirSampling(lang, vectors.iterator, perLang).map((lang, _))
         }).collect()
 
     assert(res.length == kmeansKernels, res.length)
@@ -254,7 +254,7 @@ class StackOverflow extends Serializable {
     var comp1: Long = 0
     var comp2: Long = 0
     while (iter.hasNext) {
-      val item = iter.next
+      val item = iter.next()
       comp1 += item._1
       comp2 += item._2
       count += 1

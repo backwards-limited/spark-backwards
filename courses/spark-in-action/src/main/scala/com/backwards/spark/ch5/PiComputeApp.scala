@@ -30,7 +30,7 @@ object PiComputeApp {
       _ = println(s"1. Session initialized ........... ${sparkAfter - sparkBefore}")
     } yield
       State(spark, None)
-    ).use(program.run).unsafeRunSync
+    ).use(program.run).unsafeRunSync()
 
   def program: StateT[IO, State, Option[Dataset[Int]]] =
     for {
@@ -77,7 +77,7 @@ object PiComputeApp {
       IO {
         import state.spark.implicits._
 
-        datasetO.modify(_.rdd.zipWithIndex.map(dart).toDS)(state)
+        datasetO.modify(_.rdd.zipWithIndex().map(dart).toDS())(state)
       }
     )
   }

@@ -50,6 +50,6 @@ object _7a {
         aggs.writeStream
           .outputMode("complete")
           .format("console")
-          .start
+          .start()
     )
 }

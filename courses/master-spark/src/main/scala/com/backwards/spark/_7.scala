@@ -28,7 +28,7 @@ object _7 {
       val program: Kleisli[IO, SparkSession, Unit] =
         for {
           words <- words
-          wordCounts <- Kleisli.liftF(IO(words.groupBy("value").count))
+          wordCounts <- Kleisli.liftF(IO(words.groupBy("value").count()))
           query <- query(wordCounts)
         } yield
           query.awaitTermination()
@@ -56,6 +56,6 @@ object _7 {
         wordCounts.writeStream
           .outputMode("complete")
           .format("console")
-          .start
+          .start()
     )
 }

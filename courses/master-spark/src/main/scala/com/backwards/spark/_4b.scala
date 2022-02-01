@@ -27,7 +27,7 @@ object _4b {
 
       IO delay
         spark.read.format("text").load(resourceUrl("shakespeare.txt").getFile)
-          .flatMap(_.toString.split(" ").toIterator)
+          .flatMap(_.toString.split(" ").iterator)
           .toDF() // To use Tungsten under the hood
           .tap(_.printSchema()).tap(_.show(10))
           .filter(s"lower(value) NOT IN $boringWords")

@@ -19,8 +19,8 @@ object _3 {
     )
 
   def results(ds: Dataset[Row]): IO[Unit] =
-    IO(ds.tap(_.show(500)).tap(_.printSchema).pipe(_.repartition(5))) >>=
-      (ds => IO(println(s"Total number of partitions = ${ds.rdd.partitions.length}, and total records = ${ds.count}")))
+    IO(ds.tap(_.show(500)).tap(_.printSchema()).pipe(_.repartition(5))) >>=
+      (ds => IO(println(s"Total number of partitions = ${ds.rdd.partitions.length}, and total records = ${ds.count()}")))
 
   def loadJson(implicit sparkSession: SparkSession): IO[Dataset[Row]] =
     IO(
@@ -80,5 +80,5 @@ object _3 {
     IO(ds.show(numberOfRows, maxCharactersInColumn)) *> IO(ds)
 
   def printSchema(ds: Dataset[Row]): IO[Dataset[Row]] =
-    IO(ds.printSchema) *> IO(ds)
+    IO(ds.printSchema()) *> IO(ds)
 }

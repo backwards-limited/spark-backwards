@@ -47,7 +47,7 @@ object ALSMovieRecs {
   def main(args: Array[String]): Unit = {
     // Set up our SparkSession
     val spark = SparkSession
-      .builder
+      .builder()
       .appName("ALSExample")
       .getOrCreate()
 
@@ -89,7 +89,7 @@ object ALSMovieRecs {
     )
 
     val newUserRatingsDS: Dataset[Rating] =
-      spark.sparkContext.parallelize(newUserRatings).toDS()
+      spark.sparkContext.parallelize(newUserRatings.toIndexedSeq).toDS()
 
     // Add this new user into the ratings to train ALS with.
     val allRatings: Dataset[Rating] = ratings.union(newUserRatingsDS)

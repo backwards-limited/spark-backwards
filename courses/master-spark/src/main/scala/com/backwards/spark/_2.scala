@@ -64,5 +64,5 @@ object _2 {
     IO(ds.show(numberOfRows, maxCharactersInColumn)) *> IO(ds)
 
   def printSchema(ds: Dataset[Row]): IO[Unit] =
-    IO(ds.printSchema)
+    IO(ds.printSchema())
 }

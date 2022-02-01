@@ -74,7 +74,6 @@ class S3Spec extends AnyWordSpec with Matchers with ForAllTestContainer {
   "Spark with S3" should {
     "write and read" in {
       val s3: AmazonS3 = {
-        println(s"S3 default port: 4572 -> host port: ${container.mappedPort(4572)}")
         println(s"S3 endpoint: ${container.endpointConfiguration(Service.S3).getServiceEndpoint}")
 
         AmazonS3ClientBuilder

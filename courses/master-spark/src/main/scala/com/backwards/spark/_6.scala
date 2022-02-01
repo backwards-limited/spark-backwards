@@ -32,7 +32,7 @@ object _6 {
       val program: Kleisli[IO, SparkSession, Unit] = {
         for {
           words <- load(file).map(
-            _.flatMap(_.mkString(" ").replaceAll("\n", "").replaceAll("\n", "").trim.toLowerCase.split(" ").toIterator).toDF()
+            _.flatMap(_.mkString(" ").replaceAll("\n", "").replaceAll("\n", "").trim.toLowerCase.split(" ").iterator).toDF()
           )
           boringWords <- boringWords
         } yield

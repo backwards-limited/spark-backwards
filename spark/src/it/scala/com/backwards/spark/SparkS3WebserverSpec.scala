@@ -104,7 +104,7 @@ class SparkS3WebserverSpec extends AnyWordSpec with Matchers with ForAllTestCont
 
       val s3Resource: Resource[IO, AmazonS3] =
         s3(localStackContainer.endpointConfiguration(Service.S3), localStackContainer.defaultCredentialsProvider)
-          .evalTap(_ => IO(println(s"AWS S3 client ports: ${localStackContainer.mappedPort(4572)} (host) -> 4572 (container)")))
+          .evalTap(_ => IO(println(s"AWS S3 client ports: ${localStackContainer.container.getEndpointOverride(Service.S3)} (host) -> 4572 (container)")))
 
       val sparkSessionResource: Resource[IO, SparkSession] =
         sparkSession(awsEndpointConfiguration = localStackContainer.endpointConfiguration(Service.S3).some)
@@ -175,7 +175,7 @@ class SparkS3WebserverSpec extends AnyWordSpec with Matchers with ForAllTestCont
           backend <- backendResource
           result <- Resource.eval(program(backend) run s3)
         } yield ()
-      ) use(_.pure[IO]) unsafeRunSync
+      ).use(_.pure[IO]).unsafeRunSync()
 
       println("===> " + result)
 

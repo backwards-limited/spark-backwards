@@ -19,14 +19,14 @@ object S3 {
     f: AmazonS3ClientBuilder => AmazonS3ClientBuilder = identity
   ): Resource[IO, AmazonS3] = {
     val aquire: IO[AmazonS3] =
-      IO(println("Aquiring AWS S3 client")) *> IO(
+      IO(println("Aquiring AWS S3 client")) >> IO(
         f(AmazonS3ClientBuilder
-          .standard
+          .standard()
           .withPathStyleAccessEnabled(true)
           .withEndpointConfiguration(awsEndpointConfiguration)
           .withCredentials(awsCredentialsProvider)
-          .disableChunkedEncoding
-        ).build
+          .disableChunkedEncoding()
+        ).build()
       )
 
     val release: AmazonS3 => IO[Unit] =

@@ -33,7 +33,7 @@ object _4 {
       import spark.implicits._
 
       IO(
-        ds.tap(_.printSchema()).tap(_.show)
+        ds.tap(_.printSchema()).tap(_.show())
           .groupBy("value")
           .count()                    // Generates a DataFrame from our Dataset (to get a DataFrame directly do: ds.toDF)
           .tap(_.show())

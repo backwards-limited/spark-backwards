@@ -1,6 +1,5 @@
 package com.backwards.spark
 
-import scala.language.higherKinds
 import scala.util.chaining.scalaUtilChainingOps
 import cats.effect.{IO, Resource}
 import cats.implicits._
@@ -21,7 +20,7 @@ object SparkS3 {
   ): Resource[IO, SparkSession] = {
     val aquire: IO[SparkSession] =
       IO(println("Aquiring Spark Session")) >> IO(
-        f(SparkSession.builder).pipe(sb =>
+        f(SparkSession.builder()).pipe(sb =>
           awsEndpointConfiguration.map(endpointConfig =>
           sb.config("spark.hadoop.fs.s3.impl", classOf[S3AFileSystem].getName)
             .config("spark.hadoop.fs.s3a.impl", classOf[S3AFileSystem].getName)
@@ -44,7 +43,7 @@ object SparkS3 {
             .config("spark.sql.parquet.mergeSchema", "false")
             .config("spark.speculation", "false")*/
           ).getOrElse(sb)
-        ).getOrCreate
+        ).getOrCreate()
       )
 
     val release: SparkSession => IO[Unit] =

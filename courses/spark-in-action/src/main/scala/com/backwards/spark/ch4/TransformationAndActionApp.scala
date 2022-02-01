@@ -29,7 +29,7 @@ object TransformationAndActionApp {
       _ = println(s"1. Creating a session ........... ${sparkAfter - sparkBefore}")
     } yield
       State(spark, spark.emptyDataFrame)
-    ).use(program.run).unsafeRunSync
+    ).use(program.run).unsafeRunSync()
 
   def program: StateT[IO, State, Dataset[Row]] =
     for {
@@ -47,7 +47,7 @@ object TransformationAndActionApp {
       dsTransformAfter <- checkpoint
       _ = println(s"5. Transformations  ............. ${dsTransformAfter - dsCleanupAfter}")
       state <- StateT.get[IO, State]
-      ds = state.dataset.collect
+      ds = state.dataset.collect()
       dsFinal <- checkpoint
       _ = println(s"6. Final action ................. ${dsFinal - dsTransformAfter}")
       _ = println(s"# of records .................... ${ds.length}")

@@ -34,7 +34,7 @@ object IngestionSchemaManipulationApp {
       wakeRestaurantsDF <- wakeRestaurants
       durhamRestaurantsDF <- durhamRestaurants
     } yield
-      wakeRestaurantsDF.unionByName(durhamRestaurantsDF).tap(_.show(5)).tap(_.printSchema).tap(df => println(s"Partiton count: ${df.rdd.partitions.length}"))
+      wakeRestaurantsDF.unionByName(durhamRestaurantsDF).tap(_.show(5)).tap(_.printSchema()).tap(df => println(s"Partiton count: ${df.rdd.partitions.length}"))
 
   val wakeRestaurants: ReaderT[IO, SparkSession, Dataset[Row]] =
     ReaderT(spark =>
