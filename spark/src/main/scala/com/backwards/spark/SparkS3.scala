@@ -35,7 +35,6 @@ object SparkS3 {
             .config("spark.hadoop.fs.s3a.change.detection.version.required", "false")
             .config("spark.hadoop.fs.s3a.fast.upload", "true")
             .config("spark.hadoop.fs.s3a.fast.upload.buffer", "bytebuffer")
-            .config("spark.hadoop.fs.s3a.s3.client.factory.impl", classOf[NonChunkedDefaultS3ClientFactory].getName)
             /*.config("spark.hadoop.fs.s3a.signing-algorithm", "AWS3SignerType")
             .config("spark.hadoop.fs.s3a.connection.ssl.enabled", "false")
             .config("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version", "2")

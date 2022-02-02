@@ -175,7 +175,8 @@ object Dependencies {
       "spark-mllib",
       "spark-hive",
       "spark-graphx",
-      "spark-repl"
+      "spark-repl",
+      "spark-hadoop-cloud"
     ).map(group %% _ % version % "provided, test, it")
   }
 

@@ -1,18 +1,53 @@
 package com.backwards.spark.aws
 
 import java.io.File
+import java.net.URI
 import com.amazonaws.auth.AWSCredentialsProvider
 import com.amazonaws.client.builder.AwsClientBuilder
 import com.amazonaws.services.s3.model.{Bucket, PutObjectResult}
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import cats.data.Kleisli
 import cats.effect.{IO, Resource}
+import software.amazon.awssdk.auth.credentials.{AwsBasicCredentials, AwsCredentialsProvider, StaticCredentialsProvider}
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.s3.{S3Client, S3ClientBuilder, S3Configuration}
 import com.amazonaws.services.s3.transfer.MultipleFileUpload
 import com.amazonaws.services.s3.transfer.TransferManager
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder
 
 // TODO - Monadic logging
 object S3 {
+  def s3Client(
+    awsCredentialsProvider: => AwsCredentialsProvider,
+    region: => Region,
+    endpoint: => URI,
+    s3ClientBuilder: S3ClientBuilder => S3ClientBuilder = identity
+  ): Resource[IO, S3Client] = {
+    val aquire: IO[S3Client] =
+      IO(println("Aquiring AWS S3 Client")) >> IO {
+        println(s"AWS S3 Client endpoint: $endpoint")
+
+        s3ClientBuilder(S3Client
+          .builder()
+          .serviceConfiguration(S3Configuration.builder()
+            .checksumValidationEnabled(false)
+            .chunkedEncodingEnabled(false)
+            .pathStyleAccessEnabled(true)
+            .build()
+          )
+          .credentialsProvider(awsCredentialsProvider)
+          .region(region)
+          .endpointOverride(endpoint)
+        ).build()
+      }
+
+    val release: S3Client => IO[Unit] =
+      s3Client => IO(println("Shutting down AWS S3 Client")).as(s3Client.close())
+
+    Resource.make(aquire)(release)
+  }
+
+  @deprecated
   def s3(
     awsEndpointConfiguration: => AwsClientBuilder.EndpointConfiguration,
     awsCredentialsProvider: => AWSCredentialsProvider,

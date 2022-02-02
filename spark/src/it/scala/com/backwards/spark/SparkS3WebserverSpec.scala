@@ -24,6 +24,10 @@ import sttp.model.StatusCode
 import scala.concurrent.ExecutionContext
 import scala.language.postfixOps
 import cats.effect.unsafe.implicits.global
+import software.amazon.awssdk.auth.credentials.{AwsBasicCredentials, StaticCredentialsProvider}
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.Bucket
 import org.testcontainers.utility.DockerImageName
 import com.backwards.spark.aws.S3._
 
@@ -87,7 +91,10 @@ class SparkS3WebserverSpec extends AnyWordSpec with Matchers with ForAllTestCont
 
       println(s"===> WRITE path: $path")
 
-      IO(spark.createDataset(spark.sparkContext.parallelize(0 until 500)).toDF("number").tap(_.write.mode(SaveMode.Overwrite).json(path)))
+      IO(
+        spark.createDataset(spark.sparkContext.parallelize(0 until 500)).toDF("number")
+          .tap(_.write.mode(SaveMode.Overwrite).option("fs.s3a.committer.name", "partitioned").option("fs.s3a.committer.staging.conflict-mode", "replace").json(path))
+      )
     }
 
   def read(path: String): Kleisli[IO, SparkSession, Dataset[Row]] =
@@ -102,25 +109,17 @@ class SparkS3WebserverSpec extends AnyWordSpec with Matchers with ForAllTestCont
       def backendResource(implicit cs: Concurrent[IO]): Resource[IO, SttpBackend[IO, Any]] =
         AsyncHttpClientCatsBackend.resource[IO]()
 
-      val s3Resource: Resource[IO, AmazonS3] =
-        s3(localStackContainer.endpointConfiguration(Service.S3), localStackContainer.defaultCredentialsProvider)
-          .evalTap(_ => IO(println(s"AWS S3 client ports: ${localStackContainer.container.getEndpointOverride(Service.S3)} (host) -> 4572 (container)")))
+      val s3Resource: Resource[IO, S3Client] =
+        s3Client(
+          StaticCredentialsProvider.create(AwsBasicCredentials.create(localStackContainer.container.getAccessKey, localStackContainer.container.getSecretKey)),
+          Region.of(localStackContainer.container.getRegion),
+          localStackContainer.container.getEndpointOverride(Service.S3)
+        )
 
       val sparkSessionResource: Resource[IO, SparkSession] =
         sparkSession(awsEndpointConfiguration = localStackContainer.endpointConfiguration(Service.S3).some)
 
-      /*val s3: AmazonS3 = {
-        println(s"S3 default port: 4572 -> host port: ${localStackContainer.mappedPort(4572)}")
-        println(s"S3 endpoint: ${localStackContainer.endpointConfiguration(Service.S3).getServiceEndpoint}")
 
-        AmazonS3ClientBuilder
-          .standard
-          .withPathStyleAccessEnabled(true)
-          .withEndpointConfiguration(localStackContainer.endpointConfiguration(Service.S3))
-          .withCredentials(localStackContainer.defaultCredentialsProvider)
-          .disableChunkedEncoding
-          .build
-      }*/
 
       /*val sparkBuilder: SparkSession.Builder => SparkSession.Builder =
         _.appName("test")
@@ -156,9 +155,9 @@ class SparkS3WebserverSpec extends AnyWordSpec with Matchers with ForAllTestCont
 
       program.unsafeRunSync*/
 
-      def program(backend: SttpBackend[IO, Any]): Kleisli[IO, AmazonS3, Any] =
+      def program(backend: SttpBackend[IO, Any]): Kleisli[IO, S3Client, Any] =
         for {
-          bucket <- createBucket("test")
+          bucket  <- Kleisli.liftF(IO(Bucket.builder().name("test").build()))
           y <- Kleisli.liftF(get(backend))
           /*s3 <- s3Resource
           spark <- sparkSessionResource

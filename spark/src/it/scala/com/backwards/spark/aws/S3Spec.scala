@@ -67,7 +67,8 @@ class S3Spec extends AnyWordSpec with Matchers with ForAllTestContainer {
 
       IO(
         spark.createDataset(spark.sparkContext.parallelize(0 until 500)).toDF("number")
-          .tap(_.write.mode(SaveMode.Overwrite).option("fs.s3a.committer.name", "partitioned").option("fs.s3a.committer.staging.conflict-mode", "replace").json(path)))
+          .tap(_.write.mode(SaveMode.Overwrite).option("fs.s3a.committer.name", "partitioned").option("fs.s3a.committer.staging.conflict-mode", "replace").json(path))
+      )
     }
 
   def read(path: String): Kleisli[IO, SparkSession, Dataset[Row]] =
@@ -109,6 +110,16 @@ class S3Spec extends AnyWordSpec with Matchers with ForAllTestContainer {
           .config("spark.hadoop.fs.s3a.change.detection.version.required", "false")
           .config("spark.hadoop.fs.s3a.fast.upload.buffer", "bytebuffer")
           .config("spark.hadoop.fs.s3a.fast.upload", "true")
+
+          /*.config("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version", "2")
+          .config("spark.hadoop.fs.s3a.committer.name", "directory")
+          .config("spark.hadoop.fs.s3a.committer.magic.enabled", "false")
+          .config("spark.hadoop.fs.s3a.commiter.staging.conflict-mode", "replace")
+          .config("spark.hadoop.fs.s3a.committer.staging.unique-filenames", "true")
+          .config("spark.hadoop.fs.s3a.committer.staging.abort.pending.uploads", "true")
+          .config("spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a", "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory")
+          .config("spark.sql.sources.commitProtocolClass", "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol")
+          .config("spark.sql.parquet.output.committer.class", "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter")*/
 
       def process(s3: S3Client)(spark: SparkSession): IO[Dataset[Row]] =
         for {
