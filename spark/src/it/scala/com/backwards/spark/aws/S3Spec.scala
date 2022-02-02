@@ -6,14 +6,18 @@ import cats.data.Kleisli
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import cats.implicits._
+import software.amazon.awssdk.auth.credentials.{AwsBasicCredentials, StaticCredentialsProvider}
+import software.amazon.awssdk.core.ResponseInputStream
+import software.amazon.awssdk.core.sync.RequestBody
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.s3.model._
+import software.amazon.awssdk.services.s3.{S3Client, S3Configuration}
 import org.apache.hadoop.fs.s3a.S3AFileSystem
 import org.apache.spark.sql.types.{IntegerType, StructField, StructType}
 import org.apache.spark.sql.{Dataset, Row, SaveMode, SparkSession}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.testcontainers.containers.localstack.LocalStackContainer.Service
-import com.amazonaws.services.s3.model._
-import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import com.dimafeng.testcontainers.{ForAllTestContainer, LocalStackContainer}
 import com.backwards.spark.Spark._
 
@@ -38,21 +42,21 @@ class S3Spec extends AnyWordSpec with Matchers with ForAllTestContainer {
   override val container: LocalStackContainer =
     LocalStackContainer(services = List(Service.S3))
 
-  def createBucket(name: String): Kleisli[IO, AmazonS3, Bucket] =
+  def createBucket(name: String): Kleisli[IO, S3Client, CreateBucketResponse] =
     Kleisli(s3 =>
-      IO(s3.createBucket(new CreateBucketRequest(name)))
+      IO(s3.createBucket(CreateBucketRequest.builder().bucket(name).build()))
     )
 
-  def write(bucketName: String, file: File): Kleisli[IO, AmazonS3, PutObjectResult] =
+  def write(bucketName: String, file: File): Kleisli[IO, S3Client, PutObjectResponse] =
     Kleisli(s3 =>
-      IO delay s3.putObject(new PutObjectRequest(bucketName, file.getName, file))
+      IO delay s3.putObject(PutObjectRequest.builder().bucket(bucketName).key(file.getName).build(), RequestBody.fromFile(file))
     )
 
   // TODO - Resource.make resulting in a Resource instead of S3Object
   // TODO - Refine types
-  def read(bucketName: String, key: String, versionId: String): Kleisli[IO, AmazonS3, S3Object] =
+  def read(bucketName: String, key: String, versionId: String): Kleisli[IO, S3Client, ResponseInputStream[GetObjectResponse]] =
     Kleisli(s3 =>
-      IO delay s3.getObject(new GetObjectRequest(bucketName, key).withVersionId(versionId))
+      IO delay s3.getObject(GetObjectRequest.builder().bucket(bucketName).key(key).versionId(versionId).build())
     )
 
   def write(path: String): Kleisli[IO, SparkSession, Dataset[Row]] =
@@ -61,7 +65,9 @@ class S3Spec extends AnyWordSpec with Matchers with ForAllTestContainer {
 
       println(s"===> WRITE path: $path")
 
-      IO(spark.createDataset(spark.sparkContext.parallelize(0 until 500)).toDF("number").tap(_.write.mode(SaveMode.Overwrite).json(path)))
+      IO(
+        spark.createDataset(spark.sparkContext.parallelize(0 until 500)).toDF("number")
+          .tap(_.write.mode(SaveMode.Overwrite).option("fs.s3a.committer.name", "partitioned").option("fs.s3a.committer.staging.conflict-mode", "replace").json(path)))
     }
 
   def read(path: String): Kleisli[IO, SparkSession, Dataset[Row]] =
@@ -73,17 +79,19 @@ class S3Spec extends AnyWordSpec with Matchers with ForAllTestContainer {
 
   "Spark with S3" should {
     "write and read" in {
-      val s3: AmazonS3 = {
-        println(s"S3 endpoint: ${container.endpointConfiguration(Service.S3).getServiceEndpoint}")
-
-        AmazonS3ClientBuilder
-          .standard
-          .withPathStyleAccessEnabled(true)
-          .withEndpointConfiguration(container.endpointConfiguration(Service.S3))
-          .withCredentials(container.defaultCredentialsProvider)
-          .disableChunkedEncoding
-          .build
-      }
+      val s3: S3Client =
+        S3Client
+          .builder()
+          .serviceConfiguration(S3Configuration.builder()
+            .checksumValidationEnabled(false)
+            .chunkedEncodingEnabled(false)
+            .pathStyleAccessEnabled(true)
+            .build()
+          )
+          .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(container.container.getAccessKey, container.container.getSecretKey)))
+          .region(Region.of(container.container.getRegion))
+          .endpointOverride(container.container.getEndpointOverride(Service.S3))
+          .build()
 
       val sparkBuilder: SparkSession.Builder => SparkSession.Builder =
         _.appName("test")
@@ -101,17 +109,15 @@ class S3Spec extends AnyWordSpec with Matchers with ForAllTestContainer {
           .config("spark.hadoop.fs.s3a.change.detection.version.required", "false")
           .config("spark.hadoop.fs.s3a.fast.upload.buffer", "bytebuffer")
           .config("spark.hadoop.fs.s3a.fast.upload", "true")
-          // Unlike the AmazonS3 client, the S3A client does not offer an option to disable chunked encoding (as is available via the .disableChunkedEncoding method when building AmazonS3 directly).
-          // S3A uses an S3ClientFactory in order to generate the internal AmazonS3 instance needed to communicate with the S3 endpoint.
-          // The default implementation is DefaultS3ClientFactory - extend this and override createS3Client in order to apply the additional .disableChunkedEncoding option.
-          .config("spark.hadoop.fs.s3a.s3.client.factory.impl", classOf[NonChunkedDefaultS3ClientFactory].getName)
 
-      def process(s3: AmazonS3)(spark: SparkSession): IO[Dataset[Row]] = for {
-        bucket <- createBucket("my-bucket") run s3
-        r <- write(s"s3a://${bucket.getName}/blah") run spark
-        // x <- read(s"s3a://${bucket.getName}/blah") run spark TODO - ETag issue
-        _ = r.show(10)
-      } yield r
+      def process(s3: S3Client)(spark: SparkSession): IO[Dataset[Row]] =
+        for {
+          bucket  <- IO(Bucket.builder().name("my-bucket").build())
+          _       <- createBucket(bucket.name()) run s3
+          r       <- write(s"s3a://${bucket.name()}/blah") run spark
+          // x <- read(s"s3a://${bucket.name()/blah") run spark //TODO - ETag issue
+          _ = r.show(10)
+        } yield r
 
       val program: IO[Dataset[Row]] =
         sparkResource(sparkBuilder).use(process(s3))

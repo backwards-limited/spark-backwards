@@ -6,14 +6,14 @@ lazy val root =
     .settings(description := "Backwards Spark module aggregation - Spark functionality includes example usage in various courses")
     .aggregate(spark)
     .aggregate(demoGitActions)
-    .aggregate(bigDataAnalysisWithScalaAndSpark)
-    .aggregate(sparkByExamples)
-    .aggregate(learningSpark, mnmcount, dataframe)
-    .aggregate(masterSpark)
-    .aggregate(bigDataWithSparkEmr)
-    .aggregate(bigDataHadoopSpark)
-    .aggregate(sparkInAction)
-    .dependsOn(spark, learningSpark, masterSpark, bigDataWithSparkEmr, bigDataHadoopSpark, sparkInAction) // TODO - Do I need this?
+    //.aggregate(bigDataAnalysisWithScalaAndSpark)
+    //.aggregate(sparkByExamples)
+    //.aggregate(learningSpark, mnmcount, dataframe)
+    //.aggregate(masterSpark)
+    //.aggregate(bigDataWithSparkEmr)
+    //.aggregate(bigDataHadoopSpark)
+    //.aggregate(sparkInAction)
+    //.dependsOn(spark, learningSpark, masterSpark, bigDataWithSparkEmr, bigDataHadoopSpark, sparkInAction)
 
 lazy val spark =
   project("spark", file("spark"))
@@ -51,7 +51,6 @@ lazy val bigDataWithSparkEmr =
 lazy val bigDataHadoopSpark =
   project("big-data-hadoop-spark", file("courses/big-data-hadoop-spark"))
 
-// TODO - Put back
 lazy val sparkAndHadoopCourse =
   project("spark-and-hadoop", file("courses/spark-and-hadoop"))
 
@@ -63,16 +62,17 @@ def project(id: String, base: File): Project =
     .enablePlugins(JavaAppPackaging, DockerComposePlugin)
     .settings(
       resolvers ++= Seq(
-        "jitpack" at "https://jitpack.io"
+        Resolver sonatypeRepo "releases",
+        Resolver sonatypeRepo "snapshots",
+        Resolver.JCenterRepository
       ),
       scalaVersion := "2.13.8",
       sbtVersion := BuildProperties("sbt.version"),
-      organization := "com.backwards", // TODO - techlbackwards
+      organization := "com.backwards", // TODO - tech.backwards
       name := id,
       autoStartServer := false,
       watchTriggeredMessage := Watch.clearScreenOnTrigger,
       addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full),
-      // addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
       addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
       libraryDependencies ++= Dependencies(),
       dependencyOverrides ++= Dependencies.overrides,

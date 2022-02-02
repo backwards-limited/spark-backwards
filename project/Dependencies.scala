@@ -7,9 +7,8 @@ object Dependencies {
       pprint, pureConfig, scopt, decline,
       cats, catsEffect, catsEffectTesting, console4Cats, log4Cats,
       monocle, /*monix,*/ shapeless, chimney,
-      circe, avro4s,
-      sttp,
-      betterFiles, spark, /*daria,*/ hadoop, postgresql, awsJava
+      circe, avro4s, sttp,
+      betterFiles, spark, /*daria,*/ hadoop, postgresql, awsJava, awsJavaLegacy, awsJavaEventStream
     ).flatten
 
   def overrides: Seq[ModuleID] =
@@ -199,8 +198,20 @@ object Dependencies {
   lazy val postgresql: Seq[ModuleID] =
     List("org.postgresql" % "postgresql" % "42.3.2")
 
-  lazy val awsJava: Seq[ModuleID] =
+  lazy val awsJava: Seq[ModuleID] = {
+    val group = "software.amazon.awssdk"
+    val version = "2.17.121"
+
+    List(
+      "aws-core", "sdk-core", "regions", "auth", "utils", "s3"
+    ).map(group % _ % version withSources() withJavadoc())
+  }
+
+  lazy val awsJavaLegacy: Seq[ModuleID] =
     List("com.amazonaws" % "aws-java-sdk" % "1.12.150")
+
+  lazy val awsJavaEventStream: Seq[ModuleID] =
+    List("software.amazon.eventstream" % "eventstream" % "1.0.1")
 }
 
 /*
